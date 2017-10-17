@@ -13,6 +13,7 @@ function onError(err) { console.log(err) }
 function onImageData(json) {
   const index = getRandomInt(0, json.length)
   const image = json[index]
+  
   $body.style['backgroundImage'] = "url("+image.urls.full+")"
   $body.style['backgroundColor'] = image.color
   $credit.href = image.user.links.html + "?utm_source=weather&utm_medium=referral&utm_campaign=api-credit"

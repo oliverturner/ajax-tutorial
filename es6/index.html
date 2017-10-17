@@ -17,18 +17,37 @@
     <div class="controls">
       <form class="search" id="search">
         <label class="search__label" for="search-tf">
-          <input class="search__input" id="search-tf">
+          <input class="search__input" id="search-tf" name="term" />
         </label>
         <button class="search__btn">Search</button>
       </form>
       <a class="btn credit--user" id="credit"></a>
-      <a class="btn credit--platform" href="https://unsplash">Powered by Unsplash</a>
+      <a class="btn credit--platform" href="https://unsplash.com/?utm_source=weather&utm_medium=referral&utm_campaign=api-credit">Powered by Unsplash</a>
     </div>
   </div>
   <script src="./app.js"></script>
+  <script>
+    (function () {
+      const config = {
+        weather: {
+          key: "a70fde74ccea0ae4b9d62142c9dece40",
+          url: "http://api.openweathermap.org/data/2.5/weather",
+          defaultQuery: "London"
+        },
+        unsplash: {
+          key: "535abe4a18fd52841b910a3c853121ef902e958d92735c14e22828c6276eda85",
+          url: "https://api.unsplash.com/search/photos",
+          getUtm: campaign =>
+            `utm_source=${campaign}&utm_medium=referral&utm_campaign=api-credit`
+        }
+      }
+      const loadData = app(config)
+      loadData(config.weather.defaultQuery);
+    })();
+  </script>
   <script id="__bs_script__">
     //<![CDATA[
-      document.write("<script async src='http://HOST:3000/browser-sync/browser-sync-client.js?v=2.18.13'><\/script>".replace("HOST", location.hostname));
+    document.write("<script async src='http://HOST:3000/browser-sync/browser-sync-client.js?v=2.18.13'><\/script>".replace("HOST", location.hostname));
     //]]>
   </script>
 </body>
