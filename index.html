@@ -6,25 +6,19 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta http-equiv="X-UA-Compatible" content="ie=edge">
   <title>Simple API access</title>
-  <style>
-    html,
-    body {
-      height: 100%;
-    }
-
-    body {
-      transition: 1s background;
-      margin: 0;
-      background: center center no-repeat;
-      background-size: contain;
-    }
-  </style>
+  <link rel="stylesheet" href="./styles.css">
 </head>
 
 <body>
-  <button id="moar-btn">moar!</button>
-  <a class="credit" href="https://unsplash">Unsplash:</a>
-  <a class="credit" id="credit"></a>
+  <div class="content">
+    <img class="photo" id="photo" />
+    <div class="thumbs" id="thumbs"></div>
+    <div class="controls">
+      <button class="btn" id="moar-btn">moar!</button>
+      <a class="btn credit--user" id="credit"></a>
+      <a class="btn credit--platform" href="https://unsplash">Powered by Unsplash</a>
+    </div>
+  </div>
   <script>
     const $body = document.querySelector("body")
     const $btn = document.querySelector("#moar-btn")
@@ -38,26 +32,27 @@
 
     const onError = err => { console.log(err) }
 
-    const onPictureData = json => {
+    const onPictureData = (term) => json => {
       const index = getRandomInt(0, json.length)
       const image = json[index]
-      $body.style['backgroundImage'] = `url(${image.urls.full})`
-      $body.style['backgroundColor'] = `${image.color}`
+      // $body.style['backgroundImage'] = `url(${image.urls.full})`
+      $body.style['backgroundColor'] = image.color
       $credit.href = `${image.user.links.html}?utm_source=weather&utm_medium=referral&utm_campaign=api-credit`
-      $credit.innerText = image.user.name
+      $credit.innerText = `"${term}" by ${image.user.name}`
 
-      console.log("onPictureData", json, index, image.color)
+      console.log("onPictureData", json, index, image.color, `${term} by ${image.user.name}`)
     }
 
     const onWeatherData = json => {
-      console.log("onWeatherData:", json.weather[0].main)
       const key = "df24b455387acb47127898da32793c0e9b3a43b75af80a857feb17cffe4af7f0"
       const url = "https://api.unsplash.com/photos/"
       const query = json.weather[0].main
 
+      console.log("onWeatherData:", query)
+
       fetch(`${url}?query=${query}&client_id=${key}`)
         .then(res => res.json(), onError)
-        .then(onPictureData)
+        .then(onPictureData(query))
         .catch(onError)
     }
 
@@ -78,6 +73,11 @@
 
       fetchWeather()
     }(this))
+  </script>
+  <script id="__bs_script__">
+    //<![CDATA[
+    document.write("<script async src='http://HOST:3000/browser-sync/browser-sync-client.js?v=2.18.13'><\/script>".replace("HOST", location.hostname));
+    //]]>
   </script>
 </body>
 

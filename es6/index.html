@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <title>Simple API access</title>
+  <link rel="stylesheet" href="../styles.css">
+</head>
+
+<body>
+  <div class="content">
+    <figure class="photo" id="photo">
+    </figure>
+    <div class="thumbs" id="thumbs"></div>
+    <div class="controls">
+      <form class="search" id="search">
+        <label class="search__label" for="search-tf">
+          <input class="search__input" id="search-tf">
+        </label>
+        <button class="search__btn">Search</button>
+      </form>
+      <a class="btn credit--user" id="credit"></a>
+      <a class="btn credit--platform" href="https://unsplash">Powered by Unsplash</a>
+    </div>
+  </div>
+  <script src="./app.js"></script>
+  <script id="__bs_script__">
+    //<![CDATA[
+      document.write("<script async src='http://HOST:3000/browser-sync/browser-sync-client.js?v=2.18.13'><\/script>".replace("HOST", location.hostname));
+    //]]>
+  </script>
+</body>
+
+</html>
