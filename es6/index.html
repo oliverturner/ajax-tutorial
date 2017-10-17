@@ -6,7 +6,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta http-equiv="X-UA-Compatible" content="ie=edge">
   <title>Simple API access</title>
-  <link rel="stylesheet" href="../styles.css">
+  <link rel="stylesheet" href="./styles.css">
 </head>
 
 <body>
@@ -31,7 +31,7 @@
       const config = {
         weather: {
           key: "a70fde74ccea0ae4b9d62142c9dece40",
-          url: "http://api.openweathermap.org/data/2.5/weather",
+          url: "https://api.openweathermap.org/data/2.5/weather",
           defaultQuery: "London"
         },
         unsplash: {
@@ -44,11 +44,6 @@
       const loadData = app(config)
       loadData(config.weather.defaultQuery);
     })();
-  </script>
-  <script id="__bs_script__">
-    //<![CDATA[
-    document.write("<script async src='http://HOST:3000/browser-sync/browser-sync-client.js?v=2.18.13'><\/script>".replace("HOST", location.hostname));
-    //]]>
   </script>
 </body>
 

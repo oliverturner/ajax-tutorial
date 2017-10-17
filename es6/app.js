@@ -116,7 +116,7 @@ const app = config => {
   };
 
   $search.addEventListener("submit", onSearch);
-  $search.term.value = config.defaultQuery;
+  $search.term.value = config.weather.defaultQuery;
 
   return getCityWeather;
 };
