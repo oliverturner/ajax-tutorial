@@ -45,7 +45,27 @@ a {
   justify-content: center;
   align-content: center;
 
+  overflow: hidden;
+  position: relative;
   margin: 20px 0;
+}
+
+.photo::before {
+  content: "loading";
+  
+  display: grid;
+  justify-content: center;
+  align-content: center;
+
+  position: absolute;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 0;
+
+  font-size: 0.8em;
+  text-transform: uppercase;
+  letter-spacing: 3px;
 }
 
 .photo img {
@@ -65,15 +85,28 @@ a {
   justify-content: center;
 
   width: 100%;
+  min-height: 65px;
   padding: 10px;
-  background: rgba(0,0,0,0.25)
+  background: rgba(0,0,0,0.25);
 }
 
-.thumbs__thumb {
-  display: block;
+.thumbs__link {
+  animation: 1s forwards fade-in;
+
   width: 80px;
   height: 45px;
   margin: 0 2px;
+  opacity: 0;
+  background: rgba(0,0,0,0.5);
+}
+
+.thumbs__thumb {
+  animation: 1s forwards fade-in;
+
+  display: block;
+  width: 100%;
+  height: 100%;
+  opacity: 0;
   object-fit: cover;
   pointer-events: none;
 }
@@ -86,8 +119,8 @@ a {
   align-items: center;
 
   width: 100%;
-  padding: 10px 20px;
-  background: rgba(255, 255, 255, 0.5);
+  padding: 5px 20px;
+  background: rgba(255, 255, 255, 0.25);
 }
 
 .search,
@@ -111,12 +144,13 @@ a {
   display: flex;
   align-items: center;
 
-  padding: 2px;
+  padding: 2px 2px 2px 10px;
   background: #333;
+  color: #ccc;
 }
 
 .search__label {
-  display: block;
+  margin-right: 5px;
 }
 
 .search__input {
@@ -127,5 +161,4 @@ a {
   border: none;
   font: inherit;
   background: none;
-  color: #ccc;
 }

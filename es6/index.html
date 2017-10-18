@@ -6,40 +6,37 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta http-equiv="X-UA-Compatible" content="ie=edge">
   <title>Simple API access</title>
-  <link rel="stylesheet" href="./styles.css">
+  <link rel="stylesheet" href="/styles.css">
+  <link rel="icon" href="/favicon.ico">
 </head>
 
 <body>
   <div class="content">
-    <figure class="photo" id="photo">
-    </figure>
+    <figure class="photo" id="photo"></figure>
     <div class="thumbs" id="thumbs"></div>
     <div class="controls">
       <form class="search" id="search">
-        <label class="search__label" for="search-tf">
-          <input class="search__input" id="search-tf" name="term" />
-        </label>
-        <button class="search__btn">Search</button>
+        <label class="search__label" for="search-tf">City</label>
+        <input class="search__input" id="search-tf" name="term" placeholder="Enter city name" />
+
       </form>
-      <a class="btn credit--user" id="credit-user"></a>
-      <a class="btn credit--platform" id="credit-platform">Powered by Unsplash</a>
+      <a class="btn" id="credit-user"></a>
+      <a class="btn" id="credit-platform">Powered by Unsplash</a>
     </div>
   </div>
-  <script src="./app.js"></script>
+  <script src="/app.js"></script>
   <script>
     (function (scope) {
-      const config = {
+      new App({
         weather: {
           apiKey: "a70fde74ccea0ae4b9d62142c9dece40",
           city: "London"
         },
         unsplash: {
-          apiKey: "535abe4a18fd52841b910a3c853121ef902e958d92735c14e22828c6276eda85",
+          apiKey: "df24b455387acb47127898da32793c0e9b3a43b75af80a857feb17cffe4af7f0",
           appName: "weather"
         }
-      }
-      
-      app(config).getCityWeather(config.weather.city);
+      });
     })(this);
   </script>
 </body>

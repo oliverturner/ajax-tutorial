@@ -8,7 +8,7 @@ const getConfig = ({ weather, unsplash }) => {
     weather: {
       key: weather.apiKey,
       defaultQuery: weather.city,
-      url: "http://api.openweathermap.org/data/2.5/weather"
+      url: "https://api.openweathermap.org/data/2.5/weather"
     },
     unsplash: {
       key: unsplash.apiKey,
@@ -24,22 +24,23 @@ const clearChildren = parent => {
 
 const onError = err => console.log(err);
 
-const app = userConfig => {
+function App(userConfig) {
   const $body = document.querySelector("body");
-  const $search = document.querySelector("#search");
   const $thumbs = document.querySelector("#thumbs");
   const $photo = document.querySelector("#photo");
+  const $search = document.querySelector("#search");
+  const $searchField = document.querySelector("#search-tf");
   const $creditUser = document.querySelector("#credit-user");
   const $creditPlatform = document.querySelector("#credit-platform");
 
   const config = getConfig(userConfig);
 
-  const createThumb = src => {
+  const createThumb = (parent, src, alt) => {
     const img = document.createElement("img");
     img.src = src;
+    img.alt = alt;
     img.className = "thumbs__thumb";
-
-    return img;
+    img.addEventListener("load", () => parent.appendChild(img));
   };
 
   const onLinkClick = (term, image) => e => {
@@ -54,36 +55,45 @@ const app = userConfig => {
     // improvements... but for simplicity we append children directly to $thumbs
     // and add click event handlers directly
     images.forEach((image, index) => {
-      const url = image.urls.html;
-      const link = document.createElement("a");
-      link.href = `${url}?${config.unsplash.utm}`;
-      link.appendChild(createThumb(image.urls.thumb));
-      link.addEventListener("click", onLinkClick(term, images[index]));
+      const url = image.links.html;
+      const alt = image.description || term;
+      const thumbUrl = image.urls.thumb;
 
-      $thumbs.appendChild(link);
+      const anchor = document.createElement("a");
+      anchor.href = `${url}?${config.unsplash.utm}`;
+      anchor.className = "thumbs__link";
+      anchor.addEventListener("click", onLinkClick(term, images[index]));
+
+      createThumb(anchor, thumbUrl, alt);
+
+      $thumbs.appendChild(anchor);
     });
   };
 
   // Clear the main image and load the supplied url
   // Only mount the image once the file has loaded to let it fade in nicely
-  const updatePhoto = url => {
+  const updatePhoto = (url, alt) => {
     clearChildren($photo);
 
     const img = document.createElement("img");
     img.addEventListener("load", () => $photo.appendChild(img));
     img.src = url;
+    img.alt = alt;
   };
 
   // Update the main UI
   const displayMain = (term, image) => {
     const { utm } = config.unsplash;
-    const { user, urls, color } = image;
+    const { user, urls, color, description } = image;
+
+    const alt = description || term;
+    const imageUrl = urls.regular;
 
     $body.style["backgroundColor"] = color;
     $creditUser.href = `${user.links.html}?${utm}`;
     $creditUser.innerText = `"${term}" by ${user.name}`;
 
-    updatePhoto(urls.full);
+    updatePhoto(imageUrl, alt);
   };
 
   // Step 1/4: Initialise data loading
@@ -112,21 +122,31 @@ const app = userConfig => {
       .then(data => ({ term, images: data.results }));
   };
 
-  // Step 4/4: All data loaded... update the UI
+  // Step 4/4: All data loaded...
+  // Call the methods that build the UI
   const displayCityWeatherImages = ({ term, images }) => {
+    console.log("images", images);
+
     displayThumbs(term, images);
     displayMain(term, images[0]);
   };
 
   const onSearch = e => {
     e.preventDefault();
-    getCityWeather($search.term.value);
+
+    const term = $search.term.value;
+    if (term.length) {
+      console.log(term)
+      getCityWeather(term);
+    }
   };
 
   $search.addEventListener("submit", onSearch);
   $search.term.value = config.weather.defaultQuery;
+  $searchField.addEventListener("focus", () => ($searchField.value = ""));
 
   $creditPlatform.href = `https://unsplash.com/?${config.unsplash.utm}`;
 
-  return { getCityWeather };
-};
+  // Initialise
+  getCityWeather(config.weather.defaultQuery);
+}
