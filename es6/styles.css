@@ -20,6 +20,7 @@ body {
   
   margin: 0;
   font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol";
+  font-size: 14px;
   background: center center no-repeat;
   background-size: contain;
   color: #333;
@@ -98,6 +99,10 @@ a {
   margin: 0 2px;
   opacity: 0;
   background: rgba(0,0,0,0.5);
+}
+
+.thumbs__link:focus {
+  outline: 1px solid white;
 }
 
 .thumbs__thumb {

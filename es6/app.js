@@ -22,7 +22,18 @@ const clearChildren = parent => {
   Array.from(parent.children).forEach(el => parent.removeChild(el));
 };
 
-const onError = err => console.log(err);
+const checkRes = response => {
+  if (!response.ok) {
+    throw Error(response.statusText);
+  }
+
+  return response;
+};
+
+const onError = err => {
+  console.log(err);
+  throw err;
+};
 
 function App(userConfig) {
   const $body = document.querySelector("body");
@@ -96,11 +107,16 @@ function App(userConfig) {
     updatePhoto(imageUrl, alt);
   };
 
+  // LOADING
+  //----------------------------------------------------------------------------
   // Step 1/4: Initialise data loading
   const getCityWeather = query => {
     fetchCityWeather(query)
       .then(fetchCityWeatherImages)
-      .then(displayCityWeatherImages);
+      .then(displayCityWeatherImages)
+      .catch(err => {
+        console.log("getCityWeather:", err);
+      });
   };
 
   // Step 2/4: Load weather data for the given city
@@ -108,18 +124,25 @@ function App(userConfig) {
     const { key, url } = config.weather;
     const endpoint = `${url}?q=${query}&appid=${key}`;
 
-    return fetch(endpoint).then(res => res.json(), onError);
+    return fetch(endpoint)
+      .then(checkRes)
+      .then(res => res.json())
   };
 
   // Step 3/4: Load derived data (images that match the weather description)
   const fetchCityWeatherImages = json => {
+    if (typeof json === "undefined") {
+      throw new Error("no data returned");
+    }
+    
     const { key, url } = config.unsplash;
     const term = json.weather[0].description;
     const endpoint = `${url}?query=${term}&client_id=${key}`;
 
     return fetch(endpoint)
-      .then(res => res.json(), onError)
-      .then(data => ({ term, images: data.results }));
+      .then(checkRes)
+      .then(res => res.json())
+      .then(data => ({ term, images: data.results }))
   };
 
   // Step 4/4: All data loaded...
@@ -134,19 +157,31 @@ function App(userConfig) {
   const onSearch = e => {
     e.preventDefault();
 
+    // Only search when the term is valid
     const term = $search.term.value;
     if (term.length) {
-      console.log(term)
       getCityWeather(term);
     }
   };
 
-  $search.addEventListener("submit", onSearch);
-  $search.term.value = config.weather.defaultQuery;
-  $searchField.addEventListener("focus", () => ($searchField.value = ""));
+  // INITIALISE
+  //----------------------------------------------------------------------------
+  const initCredits = utm => {
+    $creditPlatform.href = `https://unsplash.com/?${utm}`;
+  };
+  const initSearch = () => {
+    $search.addEventListener("submit", onSearch);
+    $search.term.value = config.weather.defaultQuery;
+    $searchField.addEventListener("focus", () => ($searchField.value = ""));
+  };
 
-  $creditPlatform.href = `https://unsplash.com/?${config.unsplash.utm}`;
+  // Grab DOM references and add event handlers
+  const initUI = () => {
+    initCredits(config.unsplash.utm);
+    initSearch();
+  };
 
-  // Initialise
+  // Bootstrap UI and autoload first image
+  initUI();
   getCityWeather(config.weather.defaultQuery);
 }
