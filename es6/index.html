@@ -21,29 +21,26 @@
         </label>
         <button class="search__btn">Search</button>
       </form>
-      <a class="btn credit--user" id="credit"></a>
-      <a class="btn credit--platform" href="https://unsplash.com/?utm_source=weather&utm_medium=referral&utm_campaign=api-credit">Powered by Unsplash</a>
+      <a class="btn credit--user" id="credit-user"></a>
+      <a class="btn credit--platform" id="credit-platform">Powered by Unsplash</a>
     </div>
   </div>
   <script src="./app.js"></script>
   <script>
-    (function () {
+    (function (scope) {
       const config = {
         weather: {
-          key: "a70fde74ccea0ae4b9d62142c9dece40",
-          url: "https://api.openweathermap.org/data/2.5/weather",
-          defaultQuery: "London"
+          apiKey: "a70fde74ccea0ae4b9d62142c9dece40",
+          city: "London"
         },
         unsplash: {
-          key: "535abe4a18fd52841b910a3c853121ef902e958d92735c14e22828c6276eda85",
-          url: "https://api.unsplash.com/search/photos",
-          getUtm: campaign =>
-            `utm_source=${campaign}&utm_medium=referral&utm_campaign=api-credit`
+          apiKey: "535abe4a18fd52841b910a3c853121ef902e958d92735c14e22828c6276eda85",
+          appName: "weather"
         }
       }
-      const loadData = app(config)
-      loadData(config.weather.defaultQuery);
-    })();
+      
+      app(config).getCityWeather(config.weather.city);
+    })(this);
   </script>
 </body>
 

@@ -1,15 +1,21 @@
-const defaultConfig = {
-  weather: {
-    key: "a70fde74ccea0ae4b9d62142c9dece40",
-    url: "http://api.openweathermap.org/data/2.5/weather",
-    defaultQuery: "London"
-  },
-  unsplash: {
-    key: "535abe4a18fd52841b910a3c853121ef902e958d92735c14e22828c6276eda85",
-    url: "https://api.unsplash.com/search/photos",
-    getUtm: campaign =>
-      `utm_source=${campaign}&utm_medium=referral&utm_campaign=api-credit`
-  }
+const getConfig = ({ weather, unsplash }) => {
+  console.assert(weather.apiKey, "must supply weather.apiKey");
+  console.assert(weather.city, "must supply weather.city");
+  console.assert(unsplash.apiKey, "must supply unsplash.apiKey");
+  console.assert(unsplash.appName, "must supply unsplash.appName");
+
+  return {
+    weather: {
+      key: weather.apiKey,
+      defaultQuery: weather.city,
+      url: "http://api.openweathermap.org/data/2.5/weather"
+    },
+    unsplash: {
+      key: unsplash.apiKey,
+      utm: `utm_source=${unsplash.appName}&utm_medium=referral&utm_campaign=api-credit`,
+      url: "https://api.unsplash.com/search/photos"
+    }
+  };
 };
 
 const clearChildren = parent => {
@@ -18,12 +24,15 @@ const clearChildren = parent => {
 
 const onError = err => console.log(err);
 
-const app = config => {
+const app = userConfig => {
   const $body = document.querySelector("body");
   const $search = document.querySelector("#search");
-  const $credit = document.querySelector("#credit");
   const $thumbs = document.querySelector("#thumbs");
   const $photo = document.querySelector("#photo");
+  const $creditUser = document.querySelector("#credit-user");
+  const $creditPlatform = document.querySelector("#credit-platform");
+
+  const config = getConfig(userConfig);
 
   const createThumb = src => {
     const img = document.createElement("img");
@@ -43,11 +52,11 @@ const app = config => {
 
     // We could use createDocumentFragment and event Delegation for perf
     // improvements... but for simplicity we append children directly to $thumbs
-    // and listen directly to click events
+    // and add click event handlers directly
     images.forEach((image, index) => {
       const url = image.urls.html;
       const link = document.createElement("a");
-      link.href = `${url}?${config.unsplash.getUtm("weather")}`;
+      link.href = `${url}?${config.unsplash.utm}`;
       link.appendChild(createThumb(image.urls.thumb));
       link.addEventListener("click", onLinkClick(term, images[index]));
 
@@ -67,24 +76,32 @@ const app = config => {
 
   // Update the main UI
   const displayMain = (term, image) => {
-    const { getUtm } = config.unsplash;
+    const { utm } = config.unsplash;
     const { user, urls, color } = image;
 
     $body.style["backgroundColor"] = color;
-    $credit.href = `${user.links.html}?${getUtm("weather")}`;
-    $credit.innerText = `"${term}" by ${user.name}`;
+    $creditUser.href = `${user.links.html}?${utm}`;
+    $creditUser.innerText = `"${term}" by ${user.name}`;
 
     updatePhoto(urls.full);
   };
 
-  // Load weather data for the given city
+  // Step 1/4: Initialise data loading
+  const getCityWeather = query => {
+    fetchCityWeather(query)
+      .then(fetchCityWeatherImages)
+      .then(displayCityWeatherImages);
+  };
+
+  // Step 2/4: Load weather data for the given city
   const fetchCityWeather = query => {
     const { key, url } = config.weather;
     const endpoint = `${url}?q=${query}&appid=${key}`;
+
     return fetch(endpoint).then(res => res.json(), onError);
   };
 
-  // Looad derived data (images that match the weather description)
+  // Step 3/4: Load derived data (images that match the weather description)
   const fetchCityWeatherImages = json => {
     const { key, url } = config.unsplash;
     const term = json.weather[0].description;
@@ -92,22 +109,13 @@ const app = config => {
 
     return fetch(endpoint)
       .then(res => res.json(), onError)
-      .then(data => ({ term, data }));
+      .then(data => ({ term, images: data.results }));
   };
 
-  // Data loaded... update the UI
-  const displayCityWeatherImages = ({ term, data }) => {
-    const images = data.results;
-
+  // Step 4/4: All data loaded... update the UI
+  const displayCityWeatherImages = ({ term, images }) => {
     displayThumbs(term, images);
     displayMain(term, images[0]);
-  };
-
-  // Initialise data loading
-  const getCityWeather = query => {
-    fetchCityWeather(query)
-      .then(fetchCityWeatherImages)
-      .then(displayCityWeatherImages);
   };
 
   const onSearch = e => {
@@ -118,5 +126,7 @@ const app = config => {
   $search.addEventListener("submit", onSearch);
   $search.term.value = config.weather.defaultQuery;
 
-  return getCityWeather;
+  $creditPlatform.href = `https://unsplash.com/?${config.unsplash.utm}`;
+
+  return { getCityWeather };
 };
