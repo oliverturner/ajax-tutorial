@@ -1,3 +1,10 @@
+:root {
+  --thumb-w: 80px;
+  --thumb-h: 45px;
+  --thumbs-py: 10px;
+  --thumbs-h: calc(var(--thumb-h) + (var(--thumbs-py) * 2))
+}
+
 @keyframes fade-in {
   to {opacity: 1}
 }
@@ -33,6 +40,7 @@ a {
 
 .content {
   display: grid;
+  /* grid-template-rows: 1fr minmax(--thumbs-h, auto-fit) auto;*/
   grid-template-rows: 1fr auto auto;
 
   height: 100vh;
@@ -69,6 +77,7 @@ a {
   letter-spacing: 3px;
 }
 
+.photo__dummy,
 .photo img {
   animation: 1s forwards fade-in;
 
@@ -79,24 +88,34 @@ a {
   object-fit: contain;
 }
 
+.photo__dummy {
+  position: relative;
+  height: 100px;
+  background: hotpink;
+}
+
+/* Thumbs
+------------------------------------------------------------------------------*/
 .thumbs {
   grid-row: 2;
 
   display: flex;
-  justify-content: center;
 
-  width: 100%;
-  min-height: 65px;
-  padding: 10px;
+  overflow-x: auto;
+  overflow-y: hidden;
+  height: var(--thumbs-h);
+  padding: var(--thumbs-py) 0;
   background: rgba(0,0,0,0.25);
 }
 
 .thumbs__link {
+  flex: 0 0 auto;
+  
   animation: 1s forwards fade-in;
-
-  width: 80px;
-  height: 45px;
-  margin: 0 2px;
+  
+  width: var(--thumb-w);
+  height: var(--thumb-h);
+  margin: 0 1px;
   opacity: 0;
   background: rgba(0,0,0,0.5);
 }
@@ -111,19 +130,21 @@ a {
   display: block;
   width: 100%;
   height: 100%;
+  max-height: var(--thumb-h);
   opacity: 0;
   object-fit: cover;
   pointer-events: none;
 }
 
+/* Controls
+------------------------------------------------------------------------------*/
 .controls {
   grid-row: 3;
 
-  display: flex;
-  justify-content: space-between;
+  display: grid;
+  grid-gap: 5px;
   align-items: center;
 
-  width: 100%;
   padding: 5px 20px;
   background: rgba(255, 255, 255, 0.25);
 }
@@ -138,6 +159,10 @@ a {
   border-radius: 9999px;
   font: inherit;
   background: #fff;
+}
+
+.btn {
+  text-align: center;
 }
 
 .btn:hover {
@@ -159,6 +184,7 @@ a {
 }
 
 .search__input {
+  flex: 1;
   background: #fff;
 }
 
@@ -166,4 +192,17 @@ a {
   border: none;
   font: inherit;
   background: none;
+}
+
+/*----------------------------------------------------------------------------*/
+// Mediaquery overrides
+/*----------------------------------------------------------------------------*/
+@media (min-width: 768px) {
+  .thumbs {
+    justify-content: center;
+  }
+  .controls {
+    display: flex;
+    justify-content: space-between;
+  }
 }

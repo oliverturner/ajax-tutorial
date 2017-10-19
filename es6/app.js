@@ -18,10 +18,14 @@ const getConfig = ({ weather, unsplash }) => {
   };
 };
 
+// Utility methods
+//------------------------------------------------------------------------------
 const clearChildren = parent => {
   Array.from(parent.children).forEach(el => parent.removeChild(el));
 };
 
+// Check that the server has returned a 200 status
+// (Unlike $.ajax, fetch doesn't treat error messages from the server as failed responses)
 const checkRes = response => {
   if (!response.ok) {
     throw Error(response.statusText);
@@ -30,12 +34,11 @@ const checkRes = response => {
   return response;
 };
 
-const onError = err => {
-  console.log(err);
-  throw err;
-};
-
+//------------------------------------------------------------------------------
+// Main
+//------------------------------------------------------------------------------
 function App(userConfig) {
+  // Cache references to DOM elements
   const $body = document.querySelector("body");
   const $thumbs = document.querySelector("#thumbs");
   const $photo = document.querySelector("#photo");
@@ -44,6 +47,7 @@ function App(userConfig) {
   const $creditUser = document.querySelector("#credit-user");
   const $creditPlatform = document.querySelector("#credit-platform");
 
+  // Merge user-supplied values (api keys, etc.) into config
   const config = getConfig(userConfig);
 
   const createThumb = (parent, src, alt) => {
@@ -53,6 +57,7 @@ function App(userConfig) {
     img.className = "thumbs__thumb";
     img.addEventListener("load", () => parent.appendChild(img));
   };
+
 
   const onLinkClick = (term, image) => e => {
     e.preventDefault();
@@ -87,7 +92,11 @@ function App(userConfig) {
     clearChildren($photo);
 
     const img = document.createElement("img");
-    img.addEventListener("load", () => $photo.appendChild(img));
+    img.addEventListener("load", () => {
+      // Take care of any async overruns (ghetto but effective!)
+      clearChildren($photo);
+      $photo.appendChild(img)
+    });
     img.src = url;
     img.alt = alt;
   };
@@ -126,15 +135,11 @@ function App(userConfig) {
 
     return fetch(endpoint)
       .then(checkRes)
-      .then(res => res.json())
+      .then(res => res.json());
   };
 
   // Step 3/4: Load derived data (images that match the weather description)
   const fetchCityWeatherImages = json => {
-    if (typeof json === "undefined") {
-      throw new Error("no data returned");
-    }
-    
     const { key, url } = config.unsplash;
     const term = json.weather[0].description;
     const endpoint = `${url}?query=${term}&client_id=${key}`;
@@ -142,14 +147,12 @@ function App(userConfig) {
     return fetch(endpoint)
       .then(checkRes)
       .then(res => res.json())
-      .then(data => ({ term, images: data.results }))
+      .then(data => ({ term, images: data.results }));
   };
 
   // Step 4/4: All data loaded...
   // Call the methods that build the UI
   const displayCityWeatherImages = ({ term, images }) => {
-    console.log("images", images);
-
     displayThumbs(term, images);
     displayMain(term, images[0]);
   };
