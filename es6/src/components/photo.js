@@ -1,3 +1,5 @@
+import { clearChildren } from "../utils";
+
 class Photo {
   constructor(id) {
     this.$el = document.querySelector(id);
@@ -27,3 +29,5 @@ class Photo {
     this.update(imageUrl, description || term);
   }
 }
+
+export default Photo;

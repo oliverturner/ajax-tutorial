@@ -1,0 +1,23 @@
+{
+  "name": "cityweather",
+  "version": "1.0.0",
+  "dependencies": {},
+  "devDependencies": {
+    "critical": "0.9.1",
+    "npm-run-all": "4.1.1",
+    "rollup": "0.50.0",
+    "rollup-plugin-buble": "0.16.0",
+    "rollup-plugin-commonjs": "8.2.4",
+    "rollup-plugin-node-resolve": "3.0.0",
+    "rollup-plugin-uglify": "2.0.1"
+  },
+  "keywords": [],
+  "license": "ISC",
+  "main": "index.js",
+  "scripts": {
+    "postbuild": "node ./tools/critical",
+    "build": "rollup -c",
+    "dev": "rollup -c -w",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  }
+}

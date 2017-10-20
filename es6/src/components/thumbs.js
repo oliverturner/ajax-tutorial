@@ -1,3 +1,5 @@
+import { clearChildren } from "../utils";
+
 class Thumbs {
   constructor(id, utm, displayMain) {
     this.$el = document.querySelector(id);
@@ -44,3 +46,5 @@ class Thumbs {
     });
   }
 }
+
+export default Thumbs;

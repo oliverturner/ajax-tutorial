@@ -12,7 +12,7 @@ class API {
   constructor(config, onLoadCallback) {
     this.config = config;
     this.onLoadCallback = onLoadCallback;
-    this.fetchCityWeatherImages = this.fetchCityWeatherImages.bind(this)
+    this.fetchCityWeatherImages = this.fetchCityWeatherImages.bind(this);
   }
 
   // Step 2/4: Load weather data for the given city
@@ -47,3 +47,5 @@ class API {
       });
   }
 }
+
+export default API;

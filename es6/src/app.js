@@ -1,9 +1,16 @@
+import API from "./api";
+import Search from "./components/search";
+import Photo from "./components/photo";
+import Thumbs from "./components/thumbs";
+import { getConfig } from "./utils";
+
 class App {
   constructor(userConfig) {
     // Merge user-supplied values (api keys, etc.) into config
     this.config = getConfig(userConfig);
 
-    const city = this.config.weather.city;
+    const { city } = this.config.weather;
+    const { utm } = this.config.unsplash;
 
     // Cache references to DOM elements
     this.$els = {
@@ -14,20 +21,16 @@ class App {
 
     // Bind callbacks as ncessary
     this.loadWeatherImages = this.loadWeatherImages.bind(this);
-    this.displayWeatherImages = this.displayWeatherImages.bind(this);
+    this.onWeatherImagesLoaded = this.onWeatherImagesLoaded.bind(this);
     this.onThumbClick = this.onThumbClick.bind(this);
 
-    this.api = new API(this.config, this.displayWeatherImages);
-    this.search = new Search("#search", city, this.loadWeatherImages);
+    this.api = new API(this.config, this.onWeatherImagesLoaded);
     this.photo = new Photo("#photo");
-    this.thumbs = new Thumbs(
-      "#thumbs",
-      this.config.unsplash.utm,
-      this.onThumbClick
-    );
+    this.thumbs = new Thumbs("#thumbs", utm, this.onThumbClick);
+    this.search = new Search("#search", city, this.loadWeatherImages);
+    this.initPlatformCredits(utm);
 
-    // Autoload default query images
-    this.initPlatformCredits(this.config.unsplash.utm);
+    // Autoload default city images
     this.loadWeatherImages(city);
   }
 
@@ -35,13 +38,10 @@ class App {
     this.api.load(city);
   }
 
-  displayWeatherImages({ term, images }) {
-    const image = images[0];
-    const { user, urls, color, description } = image;
-
+  onWeatherImagesLoaded({ term, images }) {
     this.currentTerm = term;
     this.thumbs.display(this.currentTerm, images);
-    this.onThumbClick(image);
+    this.onThumbClick(images[0]);
   }
 
   onThumbClick(image) {
@@ -62,3 +62,5 @@ class App {
     this.$els.creditUser.innerText = `"${term}" by ${user.name}`;
   }
 }
+
+export default App;

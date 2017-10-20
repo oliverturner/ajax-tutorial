@@ -31,7 +31,7 @@
   <script>
     (function (scope) {
       scope.init = () => {
-        new App({
+        new CityWeather({
           weather: {
             apiKey: "a70fde74ccea0ae4b9d62142c9dece40",
             city: "London"
@@ -45,12 +45,7 @@
       }
     })(this);
   </script>
-  <script src="/js/utils.js"></script>
-  <script src="/js/api.js"></script>
-  <script src="/js/search.js"></script>
-  <script src="/js/photo.js"></script>
-  <script src="/js/thumbs.js"></script>
-  <script src="/js/app.js" onload="init()"></script>
+  <script async src="/app.js" onload="init()"></script>
 </body>
 
 </html>

@@ -1,8 +1,8 @@
-const clearChildren = (parent) => {
+export const clearChildren = (parent) => {
   Array.from(parent.children).forEach(el => parent.removeChild(el));
 }
 
-const getConfig = ({ weather, unsplash }) => {
+export const getConfig = ({ weather, unsplash }) => {
   return {
     weather: {
       key: weather.apiKey,
