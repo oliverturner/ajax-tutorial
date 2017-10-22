@@ -9,7 +9,7 @@ class Photo {
 
   // Clear the main image and load the supplied url
   // Only mount the image once the file has loaded to let it fade in nicely
-  update(url, alt) {
+  display(url, alt) {
     clearChildren(this.$el);
 
     const img = document.createElement("img");
@@ -20,13 +20,6 @@ class Photo {
     });
     img.src = url;
     img.alt = alt;
-  }
-
-  // Update the main UI
-  display(term, imageUrl, description) {
-    console.log("imageUrl", imageUrl)
-
-    this.update(imageUrl, description || term);
   }
 }
 

@@ -120,6 +120,8 @@ a {
   background: rgba(0,0,0,0.5);
 }
 
+.thumbs__link.active,
+.thumbs__link:hover,
 .thumbs__link:focus {
   outline: 1px solid white;
 }

@@ -5,23 +5,34 @@ class Thumbs {
     this.$el = document.querySelector(id);
     this.utm = utm;
 
+    this.links = [];
     this.displayMain = displayMain;
     this.onLinkClick = this.onLinkClick.bind(this);
   }
 
   createThumb(parent, src, alt) {
     const img = document.createElement("img");
+
     img.src = src;
     img.alt = alt;
     img.className = "thumbs__thumb";
     img.addEventListener("load", () => parent.appendChild(img));
   }
 
-  onLinkClick(image) {
-    return e => {
-      e.preventDefault();
-      this.displayMain(image);
-    };
+  onLinkClick(e) {
+    e.preventDefault();
+
+    const index = this.links.indexOf(event.currentTarget);
+    this.setActiveIndex(index)
+    this.displayMain(index);
+  }
+
+  setActiveIndex(index) {
+    this.links.forEach(link => {
+      link.classList.remove("active");
+    });
+
+    this.links[index].classList.add("active");
   }
 
   display(term, images) {
@@ -30,7 +41,7 @@ class Thumbs {
     // We could use createDocumentFragment and event Delegation for perf
     // improvements... but for simplicity we append children directly to this.$els.thumbs
     // and add click event handlers directly
-    images.forEach((image, index) => {
+    this.links = images.map((image) => {
       const url = image.links.html;
       const alt = image.description || term;
       const thumbUrl = image.urls.thumb;
@@ -38,11 +49,11 @@ class Thumbs {
       const anchor = document.createElement("a");
       anchor.href = `${url}?${this.utm}`;
       anchor.className = "thumbs__link";
-      anchor.addEventListener("click", this.onLinkClick(images[index]));
+      anchor.addEventListener("click", this.onLinkClick);
 
       this.createThumb(anchor, thumbUrl, alt);
 
-      this.$el.appendChild(anchor);
+      return this.$el.appendChild(anchor);
     });
   }
 }

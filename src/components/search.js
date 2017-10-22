@@ -3,7 +3,7 @@ class Search {
     this.$el = document.querySelector(id);
     this.$tf = this.$el.querySelector("input");
 
-    this.$el.term.value = city;
+    this.$el.city.value = city;
     this.$tf.addEventListener("focus", () => (this.$tf.value = ""));
     this.$el.addEventListener("submit", this.onSubmit(loadWeatherImages));
   }
@@ -13,9 +13,9 @@ class Search {
       e.preventDefault();
   
       // Only search when the term is valid
-      const term = this.$el.term.value;
-      if (term.length) {
-        loadWeatherImages(term);
+      const city = this.$el.city.value;
+      if (city.length) {
+        loadWeatherImages(city);
       }
     }
   }

@@ -1,4 +1,4 @@
-import API from "./api";
+import API from "./data/api";
 import Search from "./components/search";
 import Photo from "./components/photo";
 import Thumbs from "./components/thumbs";
@@ -39,15 +39,18 @@ class App {
   }
 
   onWeatherImagesLoaded({ term, images }) {
+    this.images = images;
     this.currentTerm = term;
     this.thumbs.display(this.currentTerm, images);
-    this.onThumbClick(images[0]);
+    this.onThumbClick(0);
   }
 
-  onThumbClick(image) {
+  onThumbClick(index) {
+    const image = this.images[index];
     const { user, urls, color, description } = image;
 
-    this.photo.display(this.currentTerm, urls.regular, description);
+    this.thumbs.setActiveIndex(index);
+    this.photo.display(urls.regular, description || this.currentTerm);
     this.updateUserCredit(this.currentTerm, user);
     this.$els.body.style["backgroundColor"] = color;
   }
