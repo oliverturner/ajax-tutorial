@@ -17,11 +17,16 @@
   "keywords": [],
   "license": "ISC",
   "main": "index.js",
+  "now": {
+    "name": "cityweather"
+  },
   "scripts": {
     "build": "run-s build:*",
     "build:rollup": "rollup -c",
     "build:copy": "copyup ./public/assets/* ./dist",
     "build:critical": "node ./tools/critical",
+    "deploy": "run-s build deploy:*",
+    "deploy:now": "now ./dist",
     "start": "rollup -c -w",
     "test": "echo \"Error: no test specified\" && exit 1"
   }
