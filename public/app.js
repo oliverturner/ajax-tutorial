@@ -12,13 +12,12 @@ const checkRes = response => {
 };
 
 class API {
-  constructor(config, onLoadCallback) {
+  constructor(config) {
     this.config = config;
-    this.onLoadCallback = onLoadCallback;
     this.fetchCityWeatherImages = this.fetchCityWeatherImages.bind(this);
   }
 
-  // Step 2/4: Load weather data for the given city
+  // Step 1/3: Load weather data for the given city
   fetchCityWeather(query) {
     const { key, url } = this.config.weather;
     const endpoint = `${url}?q=${query}&appid=${key}`;
@@ -28,7 +27,7 @@ class API {
       .then(res => res.json());
   }
 
-  // Step 3/4: Load derived data (images that match the weather description)
+  // Step 2/3: Load derived data (images that match the weather description)
   fetchCityWeatherImages(json) {
     const { key, url } = this.config.unsplash;
     const term = json.weather[0].description;
@@ -40,11 +39,11 @@ class API {
       .then(data => ({ term, images: data.results }));
   }
 
-  // Step 1/4: Initialise data loading
-  load(query) {
+  // Step 3/3 once data resolved execute the supplied callback
+  load(query, onLoaded) {
     this.fetchCityWeather(query)
       .then(this.fetchCityWeatherImages)
-      .then(this.onLoadCallback)
+      .then(onLoaded)
       .catch(err => {
         console.log("getCityWeather:", err);
       });
@@ -140,8 +139,8 @@ class Thumbs {
     img.addEventListener("load", () => parent.appendChild(img));
   }
 
-  onLinkClick(e) {
-    e.preventDefault();
+  onLinkClick(event) {
+    event.preventDefault();
 
     const index = this.links.indexOf(event.currentTarget);
     this.setActiveIndex(index);
@@ -216,7 +215,7 @@ var swipe = ($el, swipeHandlers) => {
       touchstartX = event.changedTouches[0].screenX;
       touchstartY = event.changedTouches[0].screenY;
     },
-    false
+    { passive: true }
   );
 
   $el.addEventListener(
@@ -226,7 +225,7 @@ var swipe = ($el, swipeHandlers) => {
       touchendY = event.changedTouches[0].screenY;
       onTouchEnd(touchstartX, touchstartY, touchendX, touchendY);
     },
-    false
+    { passive: true }
   );
 };
 
@@ -277,8 +276,8 @@ class UI {
   }
 
   // INITIALISE
-  onKeyDown(e) {
-    const fn = this.keyBindings[e.code];
+  onKeyDown(event) {
+    const fn = this.keyBindings[event.code];
     if (fn) fn();
   }
 
@@ -311,7 +310,7 @@ class App {
       loadWeatherImages: this.loadWeatherImages,
       moveToIndex: this.moveToIndex
     });
-    this.api = new API(this.config, this.onWeatherImagesLoaded);
+    this.api = new API(this.config);
 
     // Autoload default city images
     this.loadWeatherImages(city);
@@ -319,7 +318,7 @@ class App {
 
   loadWeatherImages(city) {
     this.activeIndex = 0;
-    this.api.load(city);
+    this.api.load(city, this.onWeatherImagesLoaded);
   }
 
   onWeatherImagesLoaded({ term, images }) {

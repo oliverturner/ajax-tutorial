@@ -19,8 +19,8 @@ class Thumbs {
     img.addEventListener("load", () => parent.appendChild(img));
   }
 
-  onLinkClick(e) {
-    e.preventDefault();
+  onLinkClick(event) {
+    event.preventDefault();
 
     const index = this.links.indexOf(event.currentTarget);
     this.setActiveIndex(index)

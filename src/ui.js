@@ -51,8 +51,8 @@ class UI {
   }
 
   // INITIALISE
-  onKeyDown(e) {
-    const fn = this.keyBindings[e.code];
+  onKeyDown(event) {
+    const fn = this.keyBindings[event.code];
     if (fn) fn();
   }
 
