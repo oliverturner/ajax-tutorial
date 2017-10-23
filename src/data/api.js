@@ -9,13 +9,12 @@ const checkRes = response => {
 };
 
 class API {
-  constructor(config, onLoadCallback) {
+  constructor(config) {
     this.config = config;
-    this.onLoadCallback = onLoadCallback;
     this.fetchCityWeatherImages = this.fetchCityWeatherImages.bind(this);
   }
 
-  // Step 2/4: Load weather data for the given city
+  // Step 1/3: Load weather data for the given city
   fetchCityWeather(query) {
     const { key, url } = this.config.weather;
     const endpoint = `${url}?q=${query}&appid=${key}`;
@@ -25,7 +24,7 @@ class API {
       .then(res => res.json());
   }
 
-  // Step 3/4: Load derived data (images that match the weather description)
+  // Step 2/3: Load derived data (images that match the weather description)
   fetchCityWeatherImages(json) {
     const { key, url } = this.config.unsplash;
     const term = json.weather[0].description;
@@ -37,11 +36,11 @@ class API {
       .then(data => ({ term, images: data.results }));
   }
 
-  // Step 1/4: Initialise data loading
-  load(query) {
+  // Step 3/3 once data resolved execute the supplied callback
+  load(query, onLoaded) {
     this.fetchCityWeather(query)
       .then(this.fetchCityWeatherImages)
-      .then(this.onLoadCallback)
+      .then(onLoaded)
       .catch(err => {
         console.log("getCityWeather:", err);
       });
