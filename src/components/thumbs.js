@@ -1,8 +1,8 @@
 import { clearChildren } from "../utils";
 
 class Thumbs {
-  constructor(id, utm, displayMain) {
-    this.$el = document.querySelector(id);
+  constructor($el, utm, displayMain) {
+    this.$el = $el;
     this.utm = utm;
 
     this.links = [];

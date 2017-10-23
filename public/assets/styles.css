@@ -2,14 +2,18 @@
   --thumb-w: 80px;
   --thumb-h: 45px;
   --thumbs-py: 10px;
-  --thumbs-h: calc(var(--thumb-h) + (var(--thumbs-py) * 2))
+  --thumbs-h: calc(var(--thumb-h) + (var(--thumbs-py) * 2));
 }
 
 @keyframes fade-in {
-  to {opacity: 1}
+  to {
+    opacity: 1;
+  }
 }
 
-*, *::before, *::after {
+*,
+*::before,
+*::after {
   box-sizing: inherit;
 }
 
@@ -24,9 +28,10 @@ html {
 
 body {
   transition: 1s background;
-  
+
   margin: 0;
-  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol";
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica,
+    Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol";
   font-size: 14px;
   background: center center no-repeat;
   background-size: contain;
@@ -48,7 +53,7 @@ a {
 
 .header {
   padding: 5px 10px;
-  background: rgba(0, 0, 0, 0.65);
+  background: rgba(0, 0, 0, 0.6);
   color: #aaa;
 }
 
@@ -76,7 +81,7 @@ a {
 
 .photo::before {
   content: "loading";
-  
+
   display: grid;
   justify-content: center;
   align-content: center;
@@ -93,7 +98,7 @@ a {
 }
 
 .photo__dummy,
-.photo img {
+.photo > img {
   animation: 0.5s forwards fade-in;
 
   display: block;
@@ -120,19 +125,19 @@ a {
   overflow-y: hidden;
   height: var(--thumbs-h);
   padding: var(--thumbs-py) 0;
-  background: rgba(0,0,0,0.25);
+  background: rgba(0, 0, 0, 0.25);
 }
 
 .thumbs__link {
   flex: 0 0 auto;
-  
+
   animation: 0.25s forwards fade-in;
-  
+
   width: var(--thumb-w);
   height: var(--thumb-h);
   margin: 0 1px;
   opacity: 0;
-  background: rgba(0,0,0,0.5);
+  background: rgba(0, 0, 0, 0.5);
 }
 
 .thumbs__link.active,
@@ -158,6 +163,7 @@ a {
 .controls {
   display: grid;
   grid-gap: 5px;
+  grid-template-rows: auto auto;
   align-items: center;
 
   padding: 5px 10px;
@@ -168,7 +174,7 @@ a {
 .search__input,
 .btn {
   transition: 0.5s background-color, 0.5s color;
-  
+
   padding: 5px 10px;
   border: none;
   border-radius: 9999px;
@@ -186,8 +192,10 @@ a {
 }
 
 .search {
+  grid-column: 1/3;
+  grid-row: 1;
+
   display: flex;
-  align-items: center;
 
   padding: 2px 2px 2px 10px;
   background: #333;
@@ -195,18 +203,31 @@ a {
 }
 
 .search__label {
+  align-self: center;
+
   margin-right: 5px;
 }
 
 .search__input {
   flex: 1;
+
+  border-top-right-radius: 0;
+  border-bottom-right-radius: 0;
   background: #fff;
 }
 
 .search__btn {
-  border: none;
-  font: inherit;
-  background: none;
+  border-top-left-radius: 0;
+  border-bottom-left-radius: 0;
+  text-transform: uppercase;
+  background: #666;
+  color: #fff;
+}
+
+.controls__btn {
+  grid-row: 2;
+
+  font-size: 0.8em;
 }
 
 /*----------------------------------------------------------------------------*/
@@ -216,12 +237,16 @@ a {
   .title {
     font-weight: 100;
   }
-  
+
   .thumbs {
     justify-content: center;
   }
   .controls {
     display: flex;
     justify-content: space-between;
+  }
+
+  .controls__btn {
+    font-size: inherit;
   }
 }

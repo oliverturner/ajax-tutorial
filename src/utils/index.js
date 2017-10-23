@@ -13,6 +13,9 @@ export const getConfig = ({ weather, unsplash }) => {
       key: unsplash.apiKey,
       utm: `utm_source=${unsplash.appName}&utm_medium=referral&utm_campaign=api-credit`,
       url: "https://api.unsplash.com/search/photos"
+    },
+    ui: {
+      pageSize: 10
     }
   };
 };

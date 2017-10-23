@@ -13,6 +13,7 @@
     "rollup-plugin-node-resolve": "3.0.0",
     "rollup-plugin-serve": "0.4.2",
     "rollup-plugin-uglify": "2.0.1",
+    "serve": "6.3.1",
     "workbox-cli": "2.1.0"
   },
   "keywords": [],
@@ -31,7 +32,7 @@
     "deploy": "run-s build deploy:*",
     "deploy:now": "now ./dist",
     "dryrun": "run-s build serve",
-    "serve": "ws -d ./dist",
+    "serve": "serve ./dist",
     "start": "rollup -c -w",
     "test": "echo \"Error: no test specified\" && exit 1"
   }

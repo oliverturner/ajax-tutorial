@@ -52,25 +52,27 @@ class API {
 }
 
 class Search {
-  constructor(id, city, loadWeatherImages) {
-    this.$el = document.querySelector(id);
+  constructor($el, city, loadWeatherImages) {
+    this.$el = $el;
     this.$tf = this.$el.querySelector("input");
 
     this.$el.city.value = city;
-    this.$tf.addEventListener("focus", () => (this.$tf.value = ""));
+    this.$tf.addEventListener("focus", () =>
+      this.$tf.setSelectionRange(0, 9999)
+    );
     this.$el.addEventListener("submit", this.onSubmit(loadWeatherImages));
   }
 
   onSubmit(loadWeatherImages) {
-    return (e) => {
+    return e => {
       e.preventDefault();
-  
+
       // Only search when the term is valid
       const city = this.$el.city.value;
       if (city.length) {
         loadWeatherImages(city);
       }
-    }
+    };
   }
 }
 
@@ -89,13 +91,16 @@ const getConfig = ({ weather, unsplash }) => {
       key: unsplash.apiKey,
       utm: `utm_source=${unsplash.appName}&utm_medium=referral&utm_campaign=api-credit`,
       url: "https://api.unsplash.com/search/photos"
+    },
+    ui: {
+      pageSize: 10
     }
   };
 };
 
 class Photo {
-  constructor(id) {
-    this.$el = document.querySelector(id);
+  constructor($el) {
+    this.$el = $el;
 
     this.display = this.display.bind(this);
   }
@@ -117,8 +122,8 @@ class Photo {
 }
 
 class Thumbs {
-  constructor(id, utm, displayMain) {
-    this.$el = document.querySelector(id);
+  constructor($el, utm, displayMain) {
+    this.$el = $el;
     this.utm = utm;
 
     this.links = [];
@@ -174,6 +179,57 @@ class Thumbs {
   }
 }
 
+const onGesture = swipeHandlers => (
+  touchstartX,
+  touchstartY,
+  touchendX,
+  touchendY
+) => {
+  if (touchendX < touchstartX) {
+    swipeHandlers["swipeLeft"] && swipeHandlers["swipeLeft"]();
+  }
+  if (touchendX > touchstartX) {
+    swipeHandlers["swipeRight"] && swipeHandlers["swipeRight"]();
+  }
+  if (touchendY < touchstartY) {
+    swipeHandlers["swipeDown"] && swipeHandlers["swipeDown"]();
+  }
+  if (touchendY > touchstartY) {
+    swipeHandlers["swipeUp"] && swipeHandlers["swipeUp"]();
+  }
+  if (touchendY === touchstartY) {
+    swipeHandlers["tap"] && swipeHandlers["tap"]();
+  }
+};
+
+var swipe = ($el, swipeHandlers) => {
+  const onTouchEnd = onGesture(swipeHandlers);
+
+  let touchstartX;
+  let touchstartY;
+  let touchendX;
+  let touchendY;
+
+  $el.addEventListener(
+    "touchstart",
+    function(event) {
+      touchstartX = event.changedTouches[0].screenX;
+      touchstartY = event.changedTouches[0].screenY;
+    },
+    false
+  );
+
+  $el.addEventListener(
+    "touchend",
+    function(event) {
+      touchendX = event.changedTouches[0].screenX;
+      touchendY = event.changedTouches[0].screenY;
+      onTouchEnd(touchstartX, touchstartY, touchendX, touchendY);
+    },
+    false
+  );
+};
+
 class App {
   constructor(userConfig) {
     // Merge user-supplied values (api keys, etc.) into config
@@ -185,6 +241,9 @@ class App {
     // Cache references to DOM elements
     this.$els = {
       body: document.querySelector("body"),
+      photo: document.querySelector("#photo"),
+      thumbs: document.querySelector("#thumbs"),
+      search: document.querySelector("#search"),
       creditUser: document.querySelector("#credit-user"),
       creditPlatform: document.querySelector("#credit-platform")
     };
@@ -192,19 +251,34 @@ class App {
     // Bind callbacks as ncessary
     this.loadWeatherImages = this.loadWeatherImages.bind(this);
     this.onWeatherImagesLoaded = this.onWeatherImagesLoaded.bind(this);
-    this.onThumbClick = this.onThumbClick.bind(this);
+    this.setActiveIndex = this.setActiveIndex.bind(this);
 
+    // Bootstrap UI components
     this.api = new API(this.config, this.onWeatherImagesLoaded);
-    this.photo = new Photo("#photo");
-    this.thumbs = new Thumbs("#thumbs", utm, this.onThumbClick);
-    this.search = new Search("#search", city, this.loadWeatherImages);
+    this.photo = new Photo(this.$els.photo);
+    this.thumbs = new Thumbs(this.$els.thumbs, utm, this.setActiveIndex);
+    this.search = new Search(this.$els.search, city, this.loadWeatherImages);
     this.initPlatformCredits(utm);
+
+    // Bind keyboard events
+    document.onkeydown = this.onKeyDown.bind(this);
+    this.keyBindings = {
+      ArrowRight: this.moveToIndex("next"),
+      ArrowLeft: this.moveToIndex("prev")
+    };
+
+    // Handle swipe gestures
+    swipe(this.$els.photo, {
+      swipeLeft: this.moveToIndex("prev"),
+      swipeRight: this.moveToIndex("next")
+    });
 
     // Autoload default city images
     this.loadWeatherImages(city);
   }
-
+  
   loadWeatherImages(city) {
+    this.activeIndex = 0;
     this.api.load(city);
   }
 
@@ -212,14 +286,32 @@ class App {
     this.images = images;
     this.currentTerm = term;
     this.thumbs.display(this.currentTerm, images);
-    this.onThumbClick(0);
+    this.setActiveIndex(0);
   }
 
-  onThumbClick(index) {
-    const image = this.images[index];
+  onKeyDown(e) {
+    const fn = this.keyBindings[e.code];
+    if (fn) fn();
+  }
+
+  moveToIndex(dir) {
+    const { pageSize } = this.config.ui;
+    let n;
+
+    return () => {
+      n = dir === "next" ? this.activeIndex + 1 : this.activeIndex - 1;
+      n = n >= 0 ? n : n + pageSize;
+      this.setActiveIndex(n % pageSize);
+    };
+  }
+
+  setActiveIndex(index) {
+    this.activeIndex = index;
+
+    const image = this.images[this.activeIndex];
     const { user, urls, color, description } = image;
 
-    this.thumbs.setActiveIndex(index);
+    this.thumbs.setActiveIndex(this.activeIndex);
     this.photo.display(urls.regular, description || this.currentTerm);
     this.updateUserCredit(this.currentTerm, user);
     this.$els.body.style["backgroundColor"] = color;

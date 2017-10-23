@@ -1,8 +1,8 @@
 import { clearChildren } from "../utils";
 
 class Photo {
-  constructor(id) {
-    this.$el = document.querySelector(id);
+  constructor($el) {
+    this.$el = $el;
 
     this.display = this.display.bind(this);
   }
