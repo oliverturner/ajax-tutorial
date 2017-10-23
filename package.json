@@ -19,9 +19,6 @@
   "keywords": [],
   "license": "ISC",
   "main": "index.js",
-  "now": {
-    "name": "meteoropolis"
-  },
   "scripts": {
     "build": "run-s build:*",
     "build:clear": "rm -rf ./dist",
