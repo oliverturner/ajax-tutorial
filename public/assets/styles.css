@@ -54,7 +54,7 @@ a {
 
 .title {
   margin: 0;
-  font-weight: 100;
+  font-weight: 400;
   font-size: 20px;
   text-transform: uppercase;
   letter-spacing: 3px;
@@ -113,6 +113,8 @@ a {
 ------------------------------------------------------------------------------*/
 .thumbs {
   display: flex;
+
+  -webkit-overflow-scrolling: touch;
 
   overflow-x: auto;
   overflow-y: hidden;
@@ -211,6 +213,10 @@ a {
 /* Mediaquery overrides                                                       */
 /*----------------------------------------------------------------------------*/
 @media (min-width: 768px) {
+  .title {
+    font-weight: 100;
+  }
+  
   .thumbs {
     justify-content: center;
   }
