@@ -5,14 +5,20 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta http-equiv="X-UA-Compatible" content="ie=edge">
-  <title>WeatherPics</title>
-  <link rel="stylesheet" href="/assets/styles.css">
+  <meta name="theme-color" content="#000" />
+  <title>Meteoropolis</title>
   <link rel="icon" href="/assets/favicon.ico">
+  <link rel="stylesheet" href="/assets/styles.css">
+  <link rel="manifest" href="/assets/manifest.json">
 </head>
 
 <body>
   <!-- Structure -->
-  <div class="content">
+  <main class="content">
+    <header class="header">
+      <h1 class="title">Meteor<span>opolis</span></h1>
+    </header>
+
     <figure class="photo" id="photo"></figure>
 
     <div class="thumbs" id="thumbs"></div>
@@ -25,13 +31,13 @@
       <a href="#" class="btn" id="credit-user"></a>
       <a href="#" class="btn" id="credit-platform">Powered by Unsplash</a>
     </div>
-  </div>
+  </main>
 
   <!-- JS -->
   <script>
     (function (scope) {
       scope.init = () => {
-        new CityWeather({
+        new Meteoropolis({
           weather: {
             apiKey: "a70fde74ccea0ae4b9d62142c9dece40",
             city: "London"
@@ -45,7 +51,14 @@
     })(this);
   </script>
   <script async src="/app.js" onload="init()"></script>
-  <script async src="/workbox-sw.prod.v2.1.0.js"></script>
+  <script>
+    if (navigator.serviceWorker) {
+      navigator.serviceWorker.register('/sw.js')
+        .catch(function (err) {
+          console.error('Unable to register service worker.', err);
+        });
+    }
+  </script>
 </body>
 
 </html>

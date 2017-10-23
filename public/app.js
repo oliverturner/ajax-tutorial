@@ -1,4 +1,4 @@
-var CityWeather = (function () {
+var Meteoropolis = (function () {
 'use strict';
 
 // Check that the server has returned a 200 status

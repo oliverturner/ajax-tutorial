@@ -1,9 +1,10 @@
 {
-  "name": "CityWeather",
-  "short_name": "CityWeather",
-  "start_url": ".",
+  "name": "Meteoropolis",
+  "short_name": "Meteoropolis",
+  "start_url": "/",
   "display": "standalone",
   "background_color": "#ccc",
+  "theme_color": "#000",
   "description": "Illustrative images for the weather of a city",
   "icons": [{
     "src": "/assets/icons/icon-72x72.png",

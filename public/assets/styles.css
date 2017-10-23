@@ -40,16 +40,31 @@ a {
 
 .content {
   display: grid;
-  /* grid-template-rows: 1fr minmax(--thumbs-h, auto-fit) auto;*/
-  grid-template-rows: 1fr auto auto;
+  grid-template-rows: auto 1fr auto auto;
 
   height: 100vh;
   overflow: hidden;
 }
 
-.photo {
-  grid-row: 1;
+.header {
+  padding: 5px 10px;
+  background: rgba(0, 0, 0, 0.65);
+  color: #aaa;
+}
 
+.title {
+  margin: 0;
+  font-weight: 100;
+  font-size: 20px;
+  text-transform: uppercase;
+  letter-spacing: 3px;
+}
+
+.title > span {
+  color: steelblue;
+}
+
+.photo {
   display: grid;
   justify-content: center;
   align-content: center;
@@ -79,7 +94,7 @@ a {
 
 .photo__dummy,
 .photo img {
-  animation: 1s forwards fade-in;
+  animation: 0.5s forwards fade-in;
 
   display: block;
   width: 100%;
@@ -97,8 +112,6 @@ a {
 /* Thumbs
 ------------------------------------------------------------------------------*/
 .thumbs {
-  grid-row: 2;
-
   display: flex;
 
   overflow-x: auto;
@@ -111,7 +124,7 @@ a {
 .thumbs__link {
   flex: 0 0 auto;
   
-  animation: 1s forwards fade-in;
+  animation: 0.25s forwards fade-in;
   
   width: var(--thumb-w);
   height: var(--thumb-h);
@@ -127,7 +140,7 @@ a {
 }
 
 .thumbs__thumb {
-  animation: 1s forwards fade-in;
+  animation: 0.25s forwards fade-in;
 
   display: block;
   width: 100%;
@@ -141,13 +154,11 @@ a {
 /* Controls
 ------------------------------------------------------------------------------*/
 .controls {
-  grid-row: 3;
-
   display: grid;
   grid-gap: 5px;
   align-items: center;
 
-  padding: 5px 20px;
+  padding: 5px 10px;
   background: rgba(255, 255, 255, 0.25);
 }
 
