@@ -25,6 +25,7 @@
     "build:rollup": "rollup -c",
     "build:copy": "copyup ./public/assets/* ./dist",
     "build:critical": "node ./tools/critical",
+    "build:sw": "npx workbox generate:sw",
     "deploy": "run-s build deploy:*",
     "deploy:now": "now ./dist",
     "start": "rollup -c -w",
