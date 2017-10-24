@@ -8,6 +8,11 @@ export const ignoreArrowClicks = event => {
   }
 };
 
+/**
+ * Merge together default and user configs
+ * @param {*} defaultConfig 
+ * @param {*} userConfig 
+ */
 export const getConfig = (defaultConfig, userConfig) => {
   const { appName } = userConfig.unsplash;
 
