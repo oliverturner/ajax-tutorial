@@ -14,35 +14,39 @@ const checkRes = response => {
 class API {
   constructor(config) {
     this.config = config;
-    this.fetchCityWeatherImages = this.fetchCityWeatherImages.bind(this);
+    this.fetchImages = this.fetchImages.bind(this);
   }
 
   // Step 1/3: Load weather data for the given city
   fetchCityWeather(query) {
-    const { key, url } = this.config.weather;
-    const endpoint = `${url}?q=${query}&appid=${key}`;
+    const { apiKey, url } = this.config.weather;
+    const endpoint = `${url}?q=${query}&appid=${apiKey}`;
 
     return fetch(endpoint)
       .then(checkRes)
       .then(res => res.json());
   }
 
-  // Step 2/3: Load derived data (images that match the weather description)
-  fetchCityWeatherImages(json) {
-    const { key, url } = this.config.unsplash;
+  // Step 2/3: Load derived data
+  // i.e. images that match the city's weather description
+  fetchImages(json) {
+    console.log(json);
+
+    const { url, apiKey } = this.config.unsplash;
+    const { perPage } = this.config.ui;
     const term = json.weather[0].description;
-    const endpoint = `${url}?query=${term}&client_id=${key}`;
+    const endpoint = `${url}?query=${term}&client_id=${apiKey}&per_page=${perPage}`;
 
     return fetch(endpoint)
       .then(checkRes)
       .then(res => res.json())
-      .then(data => ({ term, images: data.results }));
+      .then(data => ({ term, data }));
   }
 
   // Step 3/3 once data resolved execute the supplied callback
   load(query, onLoaded) {
     this.fetchCityWeather(query)
-      .then(this.fetchCityWeatherImages)
+      .then(this.fetchImages)
       .then(onLoaded)
       .catch(err => {
         console.log("getCityWeather:", err);
@@ -50,15 +54,43 @@ class API {
   }
 }
 
+const clearChildren = parent => {
+  Array.from(parent.children).forEach(el => parent.removeChild(el));
+};
+
+const ignoreArrowClicks = event => {
+  if (event.code === "ArrowRight" || event.code === "ArrowLeft") {
+    event.stopPropagation();
+  }
+};
+
+const getConfig = (defaultConfig, userConfig) => {
+  const { appName } = userConfig.unsplash;
+
+  const cb = (ret, key) => {
+    ret[key] = Object.assign({}, defaultConfig[key], userConfig[key]);
+    return ret;
+  };
+
+  const initial = {
+    utm: `utm_source=${appName}&utm_medium=referral&utm_campaign=api-credit`
+  };
+
+  return Object.keys(defaultConfig).reduce(cb, initial);
+};
+
 class Search {
-  constructor($el, city, loadWeatherImages) {
+  constructor($el, initialCity, loadWeatherImages) {
     this.$el = $el;
     this.$tf = this.$el.querySelector("input");
 
-    this.$el.city.value = city;
+    this.$el.city.value = initialCity;
+
+    this.$tf.addEventListener("keydown", ignoreArrowClicks);
     this.$tf.addEventListener("focus", () =>
       this.$tf.setSelectionRange(0, 9999)
     );
+
     this.$el.addEventListener("submit", this.onSubmit(loadWeatherImages));
   }
 
@@ -75,33 +107,15 @@ class Search {
   }
 }
 
-const clearChildren = (parent) => {
-  Array.from(parent.children).forEach(el => parent.removeChild(el));
-};
-
-const getConfig = ({ weather, unsplash }) => {
-  return {
-    weather: {
-      key: weather.apiKey,
-      city: weather.city,
-      url: "https://api.openweathermap.org/data/2.5/weather"
-    },
-    unsplash: {
-      key: unsplash.apiKey,
-      utm: `utm_source=${unsplash.appName}&utm_medium=referral&utm_campaign=api-credit`,
-      url: "https://api.unsplash.com/search/photos"
-    },
-    ui: {
-      pageSize: 10
-    }
-  };
-};
-
 class Photo {
   constructor($el) {
     this.$el = $el;
 
     this.display = this.display.bind(this);
+  }
+
+  clear() {
+    clearChildren(this.$el);
   }
 
   // Clear the main image and load the supplied url
@@ -148,6 +162,10 @@ class Thumbs {
       const fn = i === index ? "add" : "remove";
       link.classList[fn]("active");
     });
+  }
+
+  clear() {
+    clearChildren(this.$el);
   }
 
   display(term, images) {
@@ -270,8 +288,15 @@ class UI {
     });
   }
 
+  reset() {
+    this.thumbs.clear();
+    this.photo.clear();
+    this.updateConditions();
+    this.updateUserCredit();
+  }
+
   displayThumbs(term, images) {
-    this.$els.conditions.textContent = term;
+    this.updateConditions(term);
     this.thumbs.display(term, images);
   }
 
@@ -294,20 +319,46 @@ class UI {
     this.$els.creditPlatform.href = `https://unsplash.com/?${utm}`;
   }
 
+  updateConditions(term = "") {
+    this.$els.conditions.textContent = term;
+  }
+
   updateUserCredit(user) {
-    this.$els.creditUser.href = `${user.links.html}?${this.utm}`;
-    this.$els.creditUser.innerText = user.name;
+    if (user) {
+      this.$els.creditUser.href = `${user.links.html}?${this.utm}`;
+      this.$els.creditUser.innerText = user.name;
+      return;
+    }
+
+    this.$els.creditUser.href = "";
+    this.$els.creditUser.innerText = "";
   }
 }
+
+const defaultConfig = {
+  weather: {
+    apiKey: "",
+    city: "",
+    url: "https://api.openweathermap.org/data/2.5/weather"
+  },
+  unsplash: {
+    apiKey: "",
+    utm: `utm_source=&utm_medium=referral&utm_campaign=api-credit`,
+    url: "https://api.unsplash.com/search/photos"
+  },
+  ui: { 
+    perPage: 10
+  }
+};
 
 class App {
   constructor(userConfig) {
     // Merge user-supplied values (api keys, etc.) into config
-    this.config = getConfig(userConfig);
+    this.config = getConfig(defaultConfig, userConfig);
     const { city } = this.config.weather;
     const { utm } = this.config.unsplash;
 
-    // Bind callbacks as ncessary
+    // Bind callbacks as necessary
     this.loadWeatherImages = this.loadWeatherImages.bind(this);
     this.onWeatherImagesLoaded = this.onWeatherImagesLoaded.bind(this);
     this.setActiveIndex = this.setActiveIndex.bind(this);
@@ -327,23 +378,26 @@ class App {
 
   loadWeatherImages(city) {
     this.activeIndex = 0;
+    this.ui.reset();
     this.api.load(city, this.onWeatherImagesLoaded);
   }
 
-  onWeatherImagesLoaded({ term, images }) {
-    this.images = images;
-    this.ui.displayThumbs(term, images);
+  onWeatherImagesLoaded({ term, data }) {
+    console.log(data);
+    
+    this.images = data.results;
+    this.ui.displayThumbs(term, this.images);
     this.setActiveIndex(0);
   }
 
   moveToIndex(dir) {
-    const { pageSize } = this.config.ui;
+    const { perPage } = this.config.ui;
     let n;
 
     return () => {
       n = dir === "next" ? this.activeIndex + 1 : this.activeIndex - 1;
-      n = n >= 0 ? n : n + pageSize;
-      this.setActiveIndex(n % pageSize);
+      n = n >= 0 ? n : n + perPage;
+      this.setActiveIndex(n % perPage);
     };
   }
 

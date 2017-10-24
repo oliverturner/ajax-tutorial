@@ -37,8 +37,15 @@ class UI {
     });
   }
 
+  reset() {
+    this.thumbs.clear();
+    this.photo.clear();
+    this.updateConditions();
+    this.updateUserCredit();
+  }
+
   displayThumbs(term, images) {
-    this.$els.conditions.textContent = term;
+    this.updateConditions(term);
     this.thumbs.display(term, images);
   }
 
@@ -61,9 +68,19 @@ class UI {
     this.$els.creditPlatform.href = `https://unsplash.com/?${utm}`;
   }
 
+  updateConditions(term = "") {
+    this.$els.conditions.textContent = term;
+  }
+
   updateUserCredit(user) {
-    this.$els.creditUser.href = `${user.links.html}?${this.utm}`;
-    this.$els.creditUser.innerText = user.name;
+    if (user) {
+      this.$els.creditUser.href = `${user.links.html}?${this.utm}`;
+      this.$els.creditUser.innerText = user.name;
+      return;
+    }
+
+    this.$els.creditUser.href = "";
+    this.$els.creditUser.innerText = "";
   }
 }
 

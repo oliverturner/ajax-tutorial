@@ -1,21 +1,24 @@
-export const clearChildren = (parent) => {
+export const clearChildren = parent => {
   Array.from(parent.children).forEach(el => parent.removeChild(el));
-}
+};
 
-export const getConfig = ({ weather, unsplash }) => {
-  return {
-    weather: {
-      key: weather.apiKey,
-      city: weather.city,
-      url: "https://api.openweathermap.org/data/2.5/weather"
-    },
-    unsplash: {
-      key: unsplash.apiKey,
-      utm: `utm_source=${unsplash.appName}&utm_medium=referral&utm_campaign=api-credit`,
-      url: "https://api.unsplash.com/search/photos"
-    },
-    ui: {
-      pageSize: 10
-    }
+export const ignoreArrowClicks = event => {
+  if (event.code === "ArrowRight" || event.code === "ArrowLeft") {
+    event.stopPropagation();
+  }
+};
+
+export const getConfig = (defaultConfig, userConfig) => {
+  const { appName } = userConfig.unsplash;
+
+  const cb = (ret, key) => {
+    ret[key] = Object.assign({}, defaultConfig[key], userConfig[key]);
+    return ret;
   };
+
+  const initial = {
+    utm: `utm_source=${appName}&utm_medium=referral&utm_campaign=api-credit`
+  };
+
+  return Object.keys(defaultConfig).reduce(cb, initial);
 };
