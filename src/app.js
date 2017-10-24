@@ -2,14 +2,30 @@ import API from "./data/api";
 import UI from "./ui";
 import { getConfig } from "./utils";
 
+const defaultConfig = {
+  weather: {
+    apiKey: "",
+    city: "",
+    url: "https://api.openweathermap.org/data/2.5/weather"
+  },
+  unsplash: {
+    apiKey: "",
+    utm: `utm_source=&utm_medium=referral&utm_campaign=api-credit`,
+    url: "https://api.unsplash.com/search/photos"
+  },
+  ui: { 
+    perPage: 10
+  }
+};
+
 class App {
   constructor(userConfig) {
     // Merge user-supplied values (api keys, etc.) into config
-    this.config = getConfig(userConfig);
+    this.config = getConfig(defaultConfig, userConfig);
     const { city } = this.config.weather;
     const { utm } = this.config.unsplash;
 
-    // Bind callbacks as ncessary
+    // Bind callbacks as necessary
     this.loadWeatherImages = this.loadWeatherImages.bind(this);
     this.onWeatherImagesLoaded = this.onWeatherImagesLoaded.bind(this);
     this.setActiveIndex = this.setActiveIndex.bind(this);
@@ -29,23 +45,26 @@ class App {
 
   loadWeatherImages(city) {
     this.activeIndex = 0;
+    this.ui.reset();
     this.api.load(city, this.onWeatherImagesLoaded);
   }
 
-  onWeatherImagesLoaded({ term, images }) {
-    this.images = images;
-    this.ui.displayThumbs(term, images);
+  onWeatherImagesLoaded({ term, data }) {
+    console.log(data)
+    
+    this.images = data.results;
+    this.ui.displayThumbs(term, this.images);
     this.setActiveIndex(0);
   }
 
   moveToIndex(dir) {
-    const { pageSize } = this.config.ui;
+    const { perPage } = this.config.ui;
     let n;
 
     return () => {
       n = dir === "next" ? this.activeIndex + 1 : this.activeIndex - 1;
-      n = n >= 0 ? n : n + pageSize;
-      this.setActiveIndex(n % pageSize);
+      n = n >= 0 ? n : n + perPage;
+      this.setActiveIndex(n % perPage);
     };
   }
 

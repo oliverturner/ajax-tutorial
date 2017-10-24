@@ -7,6 +7,10 @@ class Photo {
     this.display = this.display.bind(this);
   }
 
+  clear() {
+    clearChildren(this.$el);
+  }
+
   // Clear the main image and load the supplied url
   // Only mount the image once the file has loaded to let it fade in nicely
   display(url, alt) {

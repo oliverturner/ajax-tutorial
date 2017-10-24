@@ -25,9 +25,13 @@ class Thumbs {
 
   setActiveIndex(index) {
     this.links.forEach((link, i) => {
-      const fn = i === index ? "add" : "remove"
+      const fn = i === index ? "add" : "remove";
       link.classList[fn]("active");
     });
+  }
+
+  clear() {
+    clearChildren(this.$el);
   }
 
   display(term, images) {

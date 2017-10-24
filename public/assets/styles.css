@@ -28,7 +28,7 @@ html {
 }
 
 body {
-  transition: 1s background;
+  transition: 1s background-color;
 
   margin: 0;
   font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica,
@@ -55,7 +55,7 @@ a {
 .header {
   padding: 5px 10px;
   background: rgba(0, 0, 0, 0.6);
-  color: #aaa;
+  color: #999;
 }
 
 .title {
@@ -67,7 +67,7 @@ a {
 }
 
 .title > span {
-  color: steelblue;
+  color: lightblue;
 }
 
 /* Photo
@@ -123,6 +123,7 @@ a {
   display: flex;
 
   -webkit-overflow-scrolling: touch;
+  scroll-behavior: smooth;
 
   overflow-x: auto;
   overflow-y: hidden;
@@ -182,6 +183,12 @@ a {
 
 .info__item > a:hover {
   text-decoration: underline;
+}
+
+.info__item--conditions {
+  font-weight: 300;
+  text-transform: uppercase;
+  letter-spacing: 2px;
 }
 
 /* Controls
