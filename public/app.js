@@ -121,60 +121,68 @@ class Photo {
 }
 
 class Thumbs {
-  constructor($el, utm, displayMain) {
+  constructor($el, utm, onClickCallback) {
     this.$el = $el;
     this.utm = utm;
 
     this.links = [];
-    this.displayMain = displayMain;
+    this.onClickCallback = onClickCallback;
     this.onLinkClick = this.onLinkClick.bind(this);
+
+    this.$el.addEventListener("click", this.onLinkClick);
   }
 
-  createThumb(parent, src, alt) {
-    const img = document.createElement("img");
-
-    img.src = src;
-    img.alt = alt;
-    img.className = "thumbs__thumb";
-    img.addEventListener("load", () => parent.appendChild(img));
-  }
-
+  // Event delegation: more efficient than individually attaching event handlers
   onLinkClick(event) {
-    event.preventDefault();
+    if (event.target.matches("a")) {
+      event.preventDefault();
 
-    const index = this.links.indexOf(event.currentTarget);
-    this.setActiveIndex(index);
-    this.displayMain(index);
+      const index = this.links.indexOf(event.target);
+      this.setActiveIndex(index);
+      this.onClickCallback(index);
+    }
   }
 
   setActiveIndex(index) {
-    this.links.forEach(link => {
-      link.classList.remove("active");
+    this.links.forEach((link, i) => {
+      const fn = i === index ? "add" : "remove";
+      link.classList[fn]("active");
     });
-
-    this.links[index].classList.add("active");
   }
 
   display(term, images) {
     clearChildren(this.$el);
 
-    // We could use createDocumentFragment and event Delegation for perf
-    // improvements... but for simplicity we append children directly to this.$els.thumbs
-    // and add click event handlers directly
-    this.links = images.map((image) => {
+    // Create an off-canvas fragment and append children, batching DOM insertion
+    const f = document.createDocumentFragment();
+    this.links = images.map(image => {
+      const id = image.id;
       const url = image.links.html;
       const alt = image.description || term;
       const thumbUrl = image.urls.thumb;
 
-      const anchor = document.createElement("a");
-      anchor.href = `${url}?${this.utm}`;
-      anchor.className = "thumbs__link";
-      anchor.addEventListener("click", this.onLinkClick);
-
-      this.createThumb(anchor, thumbUrl, alt);
-
-      return this.$el.appendChild(anchor);
+      return f.appendChild(this.createThumb(id, url, thumbUrl, alt));
     });
+
+    // Thumbs are added in a single hit
+    this.$el.appendChild(f);
+  }
+
+  createThumb(id, href, src, alt) {
+    const anchor = document.createElement("a");
+    anchor.id = id;
+    anchor.href = `${href}?${this.utm}`;
+    anchor.className = "thumbs__link";
+
+    const img = document.createElement("img");
+    img.src = src;
+    img.alt = alt;
+    img.className = "thumbs__link__img";
+
+    // Defer inserting the img element until source loaded: allows fading in
+    img.addEventListener("load", () => anchor.appendChild(img));
+
+    return anchor;
   }
 }
 
@@ -237,6 +245,7 @@ class UI {
       photo: document.querySelector("#photo"),
       thumbs: document.querySelector("#thumbs"),
       search: document.querySelector("#search"),
+      conditions: document.querySelector("#conditions"),
       creditUser: document.querySelector("#credit-user"),
       creditPlatform: document.querySelector("#credit-platform")
     };
@@ -262,8 +271,8 @@ class UI {
   }
 
   displayThumbs(term, images) {
-    this.currentTerm = term;
-    this.thumbs.display(this.currentTerm, images);
+    this.$els.conditions.textContent = term;
+    this.thumbs.display(term, images);
   }
 
   displayMain(index, image) {
@@ -271,7 +280,7 @@ class UI {
 
     this.thumbs.setActiveIndex(index);
     this.photo.display(urls.regular, description || this.currentTerm);
-    this.updateUserCredit(this.currentTerm, user);
+    this.updateUserCredit(user);
     this.$els.body.style["backgroundColor"] = color;
   }
 
@@ -285,9 +294,9 @@ class UI {
     this.$els.creditPlatform.href = `https://unsplash.com/?${utm}`;
   }
 
-  updateUserCredit(term, user) {
+  updateUserCredit(user) {
     this.$els.creditUser.href = `${user.links.html}?${this.utm}`;
-    this.$els.creditUser.innerText = `"${term}" by ${user.name}`;
+    this.$els.creditUser.innerText = user.name;
   }
 }
 
@@ -343,6 +352,7 @@ class App {
 
     const image = this.images[this.activeIndex];
     this.ui.displayMain(this.activeIndex, image);
+    window.location.hash = image.id;
   }
 }
 

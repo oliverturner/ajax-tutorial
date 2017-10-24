@@ -12,6 +12,7 @@ class UI {
       photo: document.querySelector("#photo"),
       thumbs: document.querySelector("#thumbs"),
       search: document.querySelector("#search"),
+      conditions: document.querySelector("#conditions"),
       creditUser: document.querySelector("#credit-user"),
       creditPlatform: document.querySelector("#credit-platform")
     };
@@ -37,8 +38,8 @@ class UI {
   }
 
   displayThumbs(term, images) {
-    this.currentTerm = term;
-    this.thumbs.display(this.currentTerm, images);
+    this.$els.conditions.textContent = term;
+    this.thumbs.display(term, images);
   }
 
   displayMain(index, image) {
@@ -46,7 +47,7 @@ class UI {
 
     this.thumbs.setActiveIndex(index);
     this.photo.display(urls.regular, description || this.currentTerm);
-    this.updateUserCredit(this.currentTerm, user);
+    this.updateUserCredit(user);
     this.$els.body.style["backgroundColor"] = color;
   }
 
@@ -60,9 +61,9 @@ class UI {
     this.$els.creditPlatform.href = `https://unsplash.com/?${utm}`;
   }
 
-  updateUserCredit(term, user) {
+  updateUserCredit(user) {
     this.$els.creditUser.href = `${user.links.html}?${this.utm}`;
-    this.$els.creditUser.innerText = `"${term}" by ${user.name}`;
+    this.$els.creditUser.innerText = user.name;
   }
 }
 

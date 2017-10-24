@@ -34,7 +34,7 @@ class App {
 
   onWeatherImagesLoaded({ term, images }) {
     this.images = images;
-    this.ui.displayThumbs(term, images)
+    this.ui.displayThumbs(term, images);
     this.setActiveIndex(0);
   }
 
@@ -54,6 +54,7 @@ class App {
 
     const image = this.images[this.activeIndex];
     this.ui.displayMain(this.activeIndex, image);
+    window.location.hash = image.id;
   }
 }
 
