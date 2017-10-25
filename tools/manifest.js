@@ -3,13 +3,14 @@ const fs = require("fs");
 const writeFile = require("write");
 
 const pkg = require("../package.json");
-const base = path.resolve(__dirname, "..");
+
+const baseDir = path.resolve(__dirname, "..");
 const { dirs, urls } = pkg.app;
 
-const iconDir = path.resolve(base, dirs.icons);
+const iconDir = path.resolve(baseDir, dirs.icons);
 const iconUrl = `${urls.base}/${urls.icons}`;
 const iconRegex = /(\d{1,3}x\d\d{1,3}).png$/;
-const manifestDest = path.resolve(base, dirs.docRoot, urls.manifest);
+const manifestDest = path.resolve(baseDir, dirs.docRoot, urls.manifest);
 
 const getIcons = (dir, regex, url) =>
   fs
