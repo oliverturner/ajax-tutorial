@@ -1,4 +1,4 @@
-import { ignoreArrowClicks } from "../utils";
+import { ignoreArrowClicks } from "../../utils";
 
 class Search {
   constructor($el, initialCity, loadWeatherImages) {

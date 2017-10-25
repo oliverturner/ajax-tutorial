@@ -1,6 +1,29 @@
 {
   "name": "meteoropolis",
   "version": "1.0.0",
+  "keywords": [],
+  "license": "ISC",
+  "main": "index.js",
+  "app": {
+    "manifest": {
+      "name": "Meteoropolis",
+      "short_name": "Meteoropolis",
+      "start_url": "/",
+      "display": "standalone",
+      "background_color": "#ccc",
+      "theme_color": "#000",
+      "description": "Illustrative images for the weather of a city"
+    },
+    "dirs": {
+      "icons": "public/assets/icons",
+      "docRoot": "dist"
+    },
+    "urls": {
+      "base": ".",
+      "manifest": "manifest.json",
+      "icons": "assets/icons"
+    }
+  },
   "dependencies": {},
   "devDependencies": {
     "copyfiles": "1.2.0",
@@ -14,11 +37,9 @@
     "rollup-plugin-serve": "0.4.2",
     "rollup-plugin-uglify": "2.0.1",
     "serve": "6.3.1",
-    "workbox-cli": "2.1.0"
+    "workbox-cli": "2.1.0",
+    "write": "1.0.3"
   },
-  "keywords": [],
-  "license": "ISC",
-  "main": "index.js",
   "scripts": {
     "build": "run-s build:*",
     "build:clear": "rm -rf ./dist",

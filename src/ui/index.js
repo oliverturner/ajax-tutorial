@@ -2,7 +2,7 @@ import Search from "./components/search";
 import Photo from "./components/photo";
 import Thumbs from "./components/thumbs";
 
-import swipe from "./utils/swipe";
+import swipe from "../utils/swipe";
 
 class UI {
   constructor(utm, city, cbs) {

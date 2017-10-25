@@ -3,11 +3,20 @@
 
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
   <meta http-equiv="X-UA-Compatible" content="ie=edge">
   <meta name="theme-color" content="#000" />
+
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black">
+  <link rel="apple-touch-icon" href="touch-icon-iphone.png">
+  <link rel="apple-touch-icon" sizes="152x152" href="/assets/icons/icon-152x152.png">
+  <link rel="apple-touch-icon" sizes="192x192" href="/assets/icons/icon-192x192.png">
+  <link rel="apple-touch-icon" sizes="384x384" href="/assets/icons/icon-384x384.png">
+  <link rel="apple-touch-icon" sizes="512x512" href="/assets/icons/icon-512x512.png">
+
   <title>Meteoropolis</title>
-  <link rel="icon" href="/assets/favicon.ico">
+  <link rel="icon" href="/assets/icons/favicon.ico">
   <link rel="stylesheet" href="/assets/styles.css">
   <link rel="manifest" href="/assets/manifest.json">
 </head>
@@ -16,7 +25,10 @@
   <!-- Structure -->
   <main class="content">
     <header class="header">
-      <h1 class="title">Meteor<span>opolis</span></h1>
+      <h1 class="title">
+        <i>Meteor</i>
+        <i>opolis</i>
+      </h1>
     </header>
 
     <figure class="photo" id="photo"></figure>
@@ -59,40 +71,7 @@
     })(this);
   </script>
   <script async src="/app.js" onload="init()"></script>
-  <script>
-    if (navigator.serviceWorker) {
-      // Set up auto-updating for SW (if supported)
-      if (window.BroadcastChannel) {
-        const stripString = (input, strip) => {
-          if (input.endsWith(strip)) {
-            return input.substring(0, input.length - strip.length);
-          }
-
-          return input;
-        };
-        const noAction = url => url;
-        const stripHtml = url => stripString(url, ".html");
-        const stripIndex = url => stripString(url, "index");
-        const updateChannel = new window.BroadcastChannel("precache-updates");
-        const mutations = [noAction, stripHtml, stripIndex];
-
-        updateChannel.addEventListener("message", event => {
-          let updatedUrl = event.data.payload.updatedUrl;
-          mutations.forEach(mutationfunc => {
-            updatedUrl = mutationfunc(updatedUrl);
-            if (updatedUrl === location.href) {
-              console.log("This page has been updated. Please refresh the page.")
-            }
-          });
-        });
-      }
-
-      // Initialise SW
-      navigator.serviceWorker.register("/sw.js").catch(function (err) {
-        console.error("Unable to register service worker.", err);
-      });
-    }
-  </script>
+  <script async src="/assets/sw-install.js"></script>
 </body>
 
 </html>

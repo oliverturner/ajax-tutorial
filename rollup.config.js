@@ -19,10 +19,10 @@ const plugins = production
       resolve(), // tells Rollup how to find date-fns in node_modules
       commonjs(),
       browsersync({
-        server: "public",
+        server: ["public", "dist"],
         files: [
+          "dist/app.js",
           "public/assets/styles.css",
-          "public/app.js",
           "public/index.html"
         ]
       })
@@ -31,10 +31,10 @@ const plugins = production
 export default {
   input: "src/app.js",
   output: {
-    file: production ? "dist/app.js" : "public/app.js",
     name: "Meteoropolis",
+    file: "dist/app.js",
     format: "iife",
-    sourcemap: true
+    sourcemap: !production
   },
   watch: {
     include: "src/**"

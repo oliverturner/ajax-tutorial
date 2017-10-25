@@ -41,10 +41,9 @@ class API {
   }
 
   // Step 3/3 once data resolved execute the supplied callback
-  load(query, onLoaded) {
-    this.fetchCityWeather(query)
+  load(query) {
+    return this.fetchCityWeather(query)
       .then(this.fetchImages)
-      .then(onLoaded)
       .catch(err => {
         console.log("getCityWeather:", err);
       });
