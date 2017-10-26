@@ -7,34 +7,26 @@ import browsersync from "rollup-plugin-browsersync";
 // `npm run build` -> `production` is true
 // `npm run dev` -> `production` is false
 const production = !process.env.ROLLUP_WATCH;
+const bSyncConfig = {
+  server: ["public", "dist"],
+  files: ["dist/app.js", "public/assets/styles.css", "public/index.html"]
+};
 
+// Translate `imports` to `requires`
+// Convert ES6 modules to CJS modules
+// Convert ES6 syntax to ES5
+// Minify in production
 const plugins = production
-  ? [
-      resolve(), // tells Rollup how to find date-fns in node_modules
-      commonjs(), // converts date-fns to ES modules
-      buble(),
-      uglify() // minify, but only in production
-    ]
-  : [
-      resolve(), // tells Rollup how to find date-fns in node_modules
-      commonjs(),
-      browsersync({
-        server: "public",
-        files: [
-          "public/assets/styles.css",
-          "public/app.js",
-          "public/index.html"
-        ]
-      })
-    ];
+  ? [resolve(), commonjs(), buble(), uglify()]
+  : [resolve(), commonjs(), browsersync(bSyncConfig)];
 
 export default {
   input: "src/app.js",
   output: {
-    file: production ? "dist/app.js" : "public/app.js",
     name: "Meteoropolis",
+    file: "dist/app.js",
     format: "iife",
-    sourcemap: true
+    sourcemap: !production
   },
   watch: {
     include: "src/**"

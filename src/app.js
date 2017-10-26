@@ -1,6 +1,6 @@
 import API from "./data/api";
 import UI from "./ui";
-import { getConfig } from "./utils";
+import { mergeConfigs, onError } from "./utils";
 
 const defaultConfig = {
   weather: {
@@ -13,7 +13,7 @@ const defaultConfig = {
     utm: `utm_source=&utm_medium=referral&utm_campaign=api-credit`,
     url: "https://api.unsplash.com/search/photos"
   },
-  ui: { 
+  ui: {
     perPage: 10
   }
 };
@@ -21,37 +21,40 @@ const defaultConfig = {
 class App {
   constructor(userConfig) {
     // Merge user-supplied values (api keys, etc.) into config
-    this.config = getConfig(defaultConfig, userConfig);
+    this.config = mergeConfigs(defaultConfig, userConfig);
     const { city } = this.config.weather;
     const { utm } = this.config.unsplash;
 
     // Bind callbacks as necessary
-    this.loadWeatherImages = this.loadWeatherImages.bind(this);
-    this.onWeatherImagesLoaded = this.onWeatherImagesLoaded.bind(this);
+    this.loadData = this.loadData.bind(this);
+    this.onDataLoaded = this.onDataLoaded.bind(this);
     this.setActiveIndex = this.setActiveIndex.bind(this);
     this.moveToIndex = this.moveToIndex.bind(this);
 
     // Bootstrap UI components
     this.ui = new UI(utm, city, {
-      setActiveIndex: this.setActiveIndex,
-      loadWeatherImages: this.loadWeatherImages,
-      moveToIndex: this.moveToIndex
+      loadData: this.loadData,
+      moveToIndex: this.moveToIndex,
+      setActiveIndex: this.setActiveIndex
     });
     this.api = new API(this.config);
 
     // Autoload default city images
-    this.loadWeatherImages(city);
+    this.loadData(city);
   }
 
-  loadWeatherImages(city) {
+  loadData(city) {
     this.activeIndex = 0;
     this.ui.reset();
-    this.api.load(city, this.onWeatherImagesLoaded);
+    this.api
+      .load(city)
+      .then(this.onDataLoaded)
+      .catch(onError);
   }
 
-  onWeatherImagesLoaded({ term, data }) {
-    console.log(data)
-    
+  onDataLoaded({ term, data }) {
+    console.log(data);
+
     this.images = data.results;
     this.ui.displayThumbs(term, this.images);
     this.setActiveIndex(0);
@@ -70,7 +73,6 @@ class App {
 
   setActiveIndex(index) {
     this.activeIndex = index;
-
     const image = this.images[this.activeIndex];
     this.ui.displayMain(this.activeIndex, image);
     window.location.hash = image.id;

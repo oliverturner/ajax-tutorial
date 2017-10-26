@@ -1,3 +1,7 @@
+export const onError = err => {
+  console.log("onError", err.message);
+};
+
 export const clearChildren = parent => {
   Array.from(parent.children).forEach(el => parent.removeChild(el));
 };
@@ -8,7 +12,12 @@ export const ignoreArrowClicks = event => {
   }
 };
 
-export const getConfig = (defaultConfig, userConfig) => {
+/**
+ * Merge together default and user configs
+ * @param {*} defaultConfig 
+ * @param {*} userConfig 
+ */
+export const mergeConfigs = (defaultConfig, userConfig) => {
   const { appName } = userConfig.unsplash;
 
   const cb = (ret, key) => {
