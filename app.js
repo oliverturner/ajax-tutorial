@@ -43,7 +43,7 @@ function fetchImages(json) {
   const url = "https://api.unsplash.com/photos/";
   const query = json.weather[0].main;
 
-  fetch(`${url}?query=${query}&client_id=${key}`)
+  fetch(url + "?query=" + query + "&client_id=" + key)
     .then(res => res.json(), onError)
     .then(displayImage)
     .catch(onError);
