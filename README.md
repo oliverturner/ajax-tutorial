@@ -7,6 +7,8 @@ city from OpenWeatherMap and displays relevant images from Unsplash.
 
 A slideshow giving a overview can be seen here http://slides.com/oliverturner/api-tutorial
 
+_NOTE: This is a collaborative work in progress! PRs welcome!_
+
 ## How we're going to build it
 
 This is a multi-stage tutorial that takes our app from an ES5 monolith to a 
