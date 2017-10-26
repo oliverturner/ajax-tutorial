@@ -17,10 +17,12 @@ class UI {
       creditPlatform: document.querySelector("#credit-platform")
     };
 
+    console.log(cbs)
+
     // Bootstrap UI components
     this.photo = new Photo(this.$els.photo);
     this.thumbs = new Thumbs(this.$els.thumbs, utm, cbs.setActiveIndex);
-    this.search = new Search(this.$els.search, city, cbs.loadWeatherImages);
+    this.search = new Search(this.$els.search, city, cbs.loadData);
     this.initPlatformCredits(utm);
 
     // Bind keyboard events

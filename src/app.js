@@ -26,8 +26,8 @@ class App {
     const { utm } = this.config.unsplash;
 
     // Bind callbacks as necessary
-    this.loadWeatherImages = this.loadData.bind(this);
-    this.onWeatherImagesLoaded = this.onWeatherImagesLoaded.bind(this);
+    this.loadData = this.loadData.bind(this);
+    this.onDataLoaded = this.onDataLoaded.bind(this);
     this.setActiveIndex = this.setActiveIndex.bind(this);
     this.moveToIndex = this.moveToIndex.bind(this);
 
@@ -48,11 +48,11 @@ class App {
     this.ui.reset();
     this.api
       .load(city)
-      .then(this.onWeatherImagesLoaded)
+      .then(this.onDataLoaded)
       .catch(onError);
   }
 
-  onWeatherImagesLoaded({ term, data }) {
+  onDataLoaded({ term, data }) {
     console.log(data);
 
     this.images = data.results;
