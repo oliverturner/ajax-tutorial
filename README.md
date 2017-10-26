@@ -3,7 +3,8 @@ What we're going to build: https://codebar.oliverturner.cloud/
 ![Screenshot](public/assets/images/codebar.oliverturner.cloud_.png?raw=true "Meteoropolis")
 
 Meteoropolis is a small application that tells you the current weather for a 
-city from OpenWeatherMap and displays relevant images from Unsplash.
+city from OpenWeatherMap and displays images relevant to that weather (sadly not 
+always the location!) from Unsplash.
 
 A slideshow giving a overview can be seen here http://slides.com/oliverturner/api-tutorial
 
