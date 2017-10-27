@@ -37,7 +37,7 @@ function createThumb(item) {
 
 function createThumbs(json) {
   const fragment = document.createDocumentFragment();
-  json.map(function(item) {
+  json.map(item => {
     $thumbs.appendChild(createThumb(item));
   });
 
@@ -45,7 +45,7 @@ function createThumbs(json) {
 }
 
 // APPLICATION
-(function() {
+(() => {
   let imageData = [];
 
   // Step 1
@@ -54,10 +54,8 @@ function createThumbs(json) {
     const url = apis.weather.url;
     const query = "London,uk";
 
-    fetch(url + "?q=" + query + "&appid=" + key)
-      .then(function(res) {
-        return res.json();
-      }, onError)
+    fetch(`${url}?q=${query}&appid=${key}`)
+      .then(res => res.json(), onError)
       .then(fetchImages)
       .catch(onError);
   };
@@ -70,7 +68,7 @@ function createThumbs(json) {
 
     $conditions.textContent = query;
 
-    fetch(url + "?query=" + query + "&client_id=" + key)
+    fetch(`${url}?query=${query}&client_id=${key}`)
       .then(res => res.json(), onError)
       .then(onImageData)
       .catch(onError);
@@ -104,6 +102,6 @@ function createThumbs(json) {
 
   // START!
   $thumbs.addEventListener("click", onThumbClick);
-  $creditPlatform.href = "https://unsplash.com" + apis.unsplash.utm;
+  $creditPlatform.href = `https://unsplash.com${apis.unsplash.utm}`;
   fetchWeather();
 })();

@@ -1,15 +1,20 @@
 :root {
   --thumb-w: 80px;
   --thumb-h: 45px;
+  --thumbs-px: 10px;
   --thumbs-py: 10px;
-  --thumbs-h: calc(var(--thumb-h) + (var(--thumbs-py) * 2))
+  --thumbs-h: calc(var(--thumb-h) + (var(--thumbs-py) * 2));
 }
 
 @keyframes fade-in {
-  to {opacity: 1}
+  to {
+    opacity: 1;
+  }
 }
 
-*, *::before, *::after {
+*,
+*::before,
+*::after {
   box-sizing: inherit;
 }
 
@@ -23,10 +28,12 @@ html {
 }
 
 body {
-  transition: 1s background;
-  
+  transition: 1s background-color;
+
+  overflow: hidden;
   margin: 0;
-  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol";
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica,
+    Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol";
   font-size: 14px;
   background: center center no-repeat;
   background-size: contain;
@@ -40,16 +47,38 @@ a {
 
 .content {
   display: grid;
-  /* grid-template-rows: 1fr minmax(--thumbs-h, auto-fit) auto;*/
-  grid-template-rows: 1fr auto auto;
+  grid-template-rows: auto 1fr auto auto auto;
 
   height: 100vh;
   overflow: hidden;
 }
 
-.photo {
-  grid-row: 1;
+.header {
+  padding: 5px 10px;
+  background: rgba(0, 0, 0, 0.6);
+  color: rgba(255, 255, 255, 0.5);
+}
 
+.title {
+  margin: 0;
+  font-weight: 400;
+  font-size: 20px;
+  text-transform: uppercase;
+  letter-spacing: 3px;
+}
+
+.title > i {
+  float: left;
+  font-style: inherit;
+}
+
+.title > i:last-child {
+  color: lightblue;
+}
+
+/* Photo
+------------------------------------------------------------------------------*/
+.photo {
   display: grid;
   justify-content: center;
   align-content: center;
@@ -61,7 +90,7 @@ a {
 
 .photo::before {
   content: "loading";
-  
+
   display: grid;
   justify-content: center;
   align-content: center;
@@ -78,8 +107,8 @@ a {
 }
 
 .photo__dummy,
-.photo img {
-  animation: 1s forwards fade-in;
+.photo > img {
+  animation: 0.5s forwards fade-in;
 
   display: block;
   width: 100%;
@@ -97,35 +126,38 @@ a {
 /* Thumbs
 ------------------------------------------------------------------------------*/
 .thumbs {
-  grid-row: 2;
-
   display: flex;
+
+  -webkit-overflow-scrolling: touch;
+  scroll-behavior: smooth;
 
   overflow-x: auto;
   overflow-y: hidden;
   height: var(--thumbs-h);
   padding: var(--thumbs-py) 0;
-  background: rgba(0,0,0,0.25);
+  background: rgba(0, 0, 0, 0.25);
 }
 
 .thumbs__link {
   flex: 0 0 auto;
-  
-  animation: 1s forwards fade-in;
-  
+
+  animation: 0.25s forwards fade-in;
+
   width: var(--thumb-w);
   height: var(--thumb-h);
   margin: 0 1px;
   opacity: 0;
-  background: rgba(0,0,0,0.5);
+  background: rgba(0, 0, 0, 0.5);
 }
 
+.thumbs__link.active,
+.thumbs__link:hover,
 .thumbs__link:focus {
   outline: 1px solid white;
 }
 
-.thumbs__thumb {
-  animation: 1s forwards fade-in;
+.thumbs__link__img {
+  animation: 0.25s forwards fade-in;
 
   display: block;
   width: 100%;
@@ -136,16 +168,39 @@ a {
   pointer-events: none;
 }
 
+/* Credits
+------------------------------------------------------------------------------*/
+.info {
+  display: flex;
+  justify-content: space-between;
+
+  padding: 5px 10px;
+  background: rgba(0, 0, 0, 0.5);
+  color: #ddd;
+}
+
+.info__item {
+  margin: 0;
+}
+
+.info__item > span {
+  color: #aaa;
+}
+
+.info__item > a:hover {
+  text-decoration: underline;
+}
+
+.info__item--conditions {
+  font-weight: 300;
+  text-transform: uppercase;
+  letter-spacing: 2px;
+}
+
 /* Controls
 ------------------------------------------------------------------------------*/
 .controls {
-  grid-row: 3;
-
-  display: grid;
-  grid-gap: 5px;
-  align-items: center;
-
-  padding: 5px 20px;
+  padding: 5px 10px;
   background: rgba(255, 255, 255, 0.25);
 }
 
@@ -153,7 +208,7 @@ a {
 .search__input,
 .btn {
   transition: 0.5s background-color, 0.5s color;
-  
+
   padding: 5px 10px;
   border: none;
   border-radius: 9999px;
@@ -172,37 +227,55 @@ a {
 
 .search {
   display: flex;
-  align-items: center;
 
+  margin: auto;
   padding: 2px 2px 2px 10px;
+  font-size: 16px;
   background: #333;
   color: #ccc;
 }
 
 .search__label {
+  align-self: center;
+
   margin-right: 5px;
 }
 
 .search__input {
   flex: 1;
+
+  border-top-right-radius: 0;
+  border-bottom-right-radius: 0;
   background: #fff;
 }
 
 .search__btn {
-  border: none;
-  font: inherit;
-  background: none;
+  border-top-left-radius: 0;
+  border-bottom-left-radius: 0;
+  text-transform: uppercase;
+  background: #666;
+  color: #fff;
 }
 
 /*----------------------------------------------------------------------------*/
-// Mediaquery overrides
+/* Mediaquery overrides                                                       */
 /*----------------------------------------------------------------------------*/
 @media (min-width: 768px) {
+  .title {
+    font-weight: 100;
+  }
+
   .thumbs {
     justify-content: center;
   }
+
   .controls {
     display: flex;
     justify-content: space-between;
+  }
+
+  .search,
+  .controls__btn {
+    font-size: inherit;
   }
 }
