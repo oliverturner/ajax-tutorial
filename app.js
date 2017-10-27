@@ -46,6 +46,7 @@ function createThumbs(json) {
 
 // APPLICATION
 (() => {
+  alert("wtf")
   let imageData = [];
 
   // Step 1

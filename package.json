@@ -1,0 +1,23 @@
+{
+  "name": "ajax-tutorial",
+  "description": "A multi-part tutorial on working with APIs",
+  "version": "1.0.0",
+  "author": "Oliver Turner <oliver.turner@codedsignal.co.uk>",
+  "bugs": {
+    "url": "https://github.com/oliverturner/ajax-tutorial/issues"
+  },
+  "homepage": "https://github.com/oliverturner/ajax-tutorial#readme",
+  "keywords": [],
+  "license": "ISC",
+  "main": "app.js",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/oliverturner/ajax-tutorial.git"
+  },
+  "scripts": {
+    "test": "serve"
+  },
+  "devDependencies": {
+    "serve": "6.3.1"
+  }
+}
