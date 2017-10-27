@@ -27,21 +27,21 @@ function createThumb(item) {
   img.src = item.urls.thumb;
   img.className = "thumbs__link__img";
 
-  const a = document.createElement("a");
-  a.href = item.links.html;
-  a.className = "thumbs__link";
-  a.appendChild(img);
+  const anchor = document.createElement("a");
+  anchor.href = item.links.html;
+  anchor.className = "thumbs__link";
+  anchor.appendChild(img);
 
-  return a;
+  return anchor;
 }
 
 function createThumbs(json) {
-  const f = document.createDocumentFragment();
+  const fragment = document.createDocumentFragment();
   json.map(function(item) {
     $thumbs.appendChild(createThumb(item));
   });
 
-  return f;
+  return fragment;
 }
 
 // APPLICATION
