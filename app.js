@@ -1,6 +1,8 @@
 const $body = document.querySelector("body");
 const $btn = document.querySelector("#moar-btn");
-const $credit = document.querySelector("#credit");
+const $img = document.querySelector("#img");
+const $creditUser = document.querySelector("#credit-user");
+const $creditPlatform = document.querySelector("#credit-platform");
 
 const apis = {
   weather: {
@@ -16,6 +18,7 @@ const apis = {
 function getRandomInt(min, max) {
   min = Math.ceil(min);
   max = Math.floor(max);
+
   return Math.floor(Math.random() * (max - min)) + min;
 }
 
@@ -23,6 +26,7 @@ function onError(err) {
   console.log(err);
 }
 
+// APPLICATION
 // Step 1
 const fetchWeather = () => {
   const key = apis.weather.key;
@@ -54,14 +58,15 @@ function displayImage(json) {
   const index = getRandomInt(0, json.length);
   const image = json[index];
 
-  $body.style["backgroundImage"] = "url(" + image.urls.full + ")";
+  $img.src = image.urls.full;
   $body.style["backgroundColor"] = image.color;
-  $credit.href = image.user.links.html + apis.unsplash.utm;
-  $credit.innerText = image.user.name;
+  $creditUser.href = image.user.links.html + apis.unsplash.utm;
+  $creditUser.textContent = image.user.name;
 }
 
 // START!
 (function() {
+  $creditPlatform.href = "https://unsplash.com/" + apis.unsplash.utm;
   $btn.addEventListener("click", fetchWeather);
   fetchWeather();
 })();
