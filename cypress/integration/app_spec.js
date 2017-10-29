@@ -1,38 +1,49 @@
-describe("Meteoropolis", function() {
-  it("Does not do much!", function() {
-    expect(true).to.equal(true);
+const weatherJSON = require("../fixtures/json/weather.json");
+const unsplashJSON = require("../fixtures/json/unsplash-photos.json");
+
+function deferred() {
+  const deferred = {};
+  deferred.promise = new Promise((resolve, reject) => {
+    deferred.resolve = resolve;
+    deferred.reject = reject;
   });
 
+  return deferred;
+}
+
+describe("Meteoropolis", function() {
   it(".should() - assert that <title> is correct", function() {
-    cy.visit("http://localhost:5000/");
+    cy.visit("index.html");
     cy.title().should("include", "Meteoropolis");
   });
 
-  it("stubs data", () => {
-    cy.fixture("json/weather.json").as("weatherJSON");
-    cy.fixture("json/unsplash.json").as("unsplashJSON");
+  describe("Data fetching", () => {
+    beforeEach(function() {
+      this.fetchDeferred = deferred();
+      // this.fetchImagesDeferred = deferred();
 
-    // enable response stubbing
-    cy.server();
+      cy.visit("index.html", {
+        onBeforeLoad(win) {
+          cy.stub(win, "fetch").returns(this.fetchDeferred.promise);
+        }
+      });
+    });
 
-    cy
-      .route({
-        method: "GET",
-        url: "https://api.openweathermap.org/*",
-        response: "@weatherJSON"
-      })
-      .as("getWeather");
+    describe("Fetch weather", function() {
+      let counter = 0;
 
-    cy
-      .route({
-        method: "GET",
-        url: "https://api.unsplash.com/*",
-        response: "@unsplashJSON"
-      })
-      .as("getImages");
+      beforeEach(function() {
+        this.fetchDeferred.resolve({
+          json() {
+            return counter++ === 0 ? weatherJSON : unsplashJSON;
+          },
+          ok: true
+        });
+      });
 
-    cy.visit("http://localhost:5000/");
-
-    // cy.wait(["@getWeather", "@getImages"]);
+      it("stubs data", function() {
+        // cy.window().its('App')
+      });
+    });
   });
 });

@@ -46,7 +46,6 @@ function createThumbs(json) {
 
 // APPLICATION
 (() => {
-  alert("wtf")
   let imageData = [];
 
   // Step 1
@@ -78,8 +77,16 @@ function createThumbs(json) {
   // Step 3
   function onImageData(json) {
     imageData = json;
-    $thumbs.appendChild(createThumbs(imageData));
-    displayImage(0);
+
+    console.log("imageData:", imageData)
+
+    try {
+      $thumbs.appendChild(createThumbs(imageData));
+      displayImage(0);
+    }
+    catch (err) {
+      console.log(err)
+    }
   }
 
   // Step 4
