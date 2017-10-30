@@ -35,9 +35,9 @@ function createThumb(item) {
   return anchor;
 }
 
-function createThumbs(json) {
+function createThumbs(imageData) {
   const fragment = document.createDocumentFragment();
-  json.map(item => {
+  imageData.map(item => {
     $thumbs.appendChild(createThumb(item));
   });
 
@@ -46,70 +46,64 @@ function createThumbs(json) {
 
 // APPLICATION
 (() => {
-  let imageData = [];
-
   // Step 1
   const fetchWeather = () => {
     const key = apis.weather.key;
     const url = apis.weather.url;
     const query = "London,uk";
 
-    fetch(`${url}?q=${query}&appid=${key}`)
+    return fetch(`${url}?q=${query}&appid=${key}`)
       .then(res => res.json(), onError)
-      .then(fetchImages)
       .catch(onError);
   };
 
   // Step 2
-  function fetchImages(json) {
+  function fetchImages(weatherData) {
     const key = apis.unsplash.key;
     const url = apis.unsplash.url;
-    const query = json.weather[0].main;
+    const query = weatherData.weather[0].main;
 
     $conditions.textContent = query;
 
-    fetch(`${url}?query=${query}&client_id=${key}`)
+    return fetch(`${url}?query=${query}&client_id=${key}`)
       .then(res => res.json(), onError)
-      .then(onImageData)
+      .then(imageData => ({weatherData, imageData}))
       .catch(onError);
   }
 
   // Step 3
-  function onImageData(json) {
-    imageData = json;
-
-    console.log("imageData:", imageData)
-
-    try {
-      $thumbs.appendChild(createThumbs(imageData));
-      displayImage(0);
+  function onImageData({weatherData, imageData}) {
+    function displayImage(image) {
+      $img.src = image.urls.regular;
+      $body.style.backgroundColor = image.color;
+      $creditUser.href = image.user.links.html + apis.unsplash.utm;
+      $creditUser.textContent = image.user.name;
     }
-    catch (err) {
-      console.log(err)
+  
+    // Event handlers
+    function onThumbClick(event) {
+      if (event.target.matches("a")) {
+        event.preventDefault();
+        const links = Array.from($thumbs.children);
+        const index = links.indexOf(event.target);
+        displayImage(imageData[index]);
+      }
     }
+
+    $thumbs.appendChild(createThumbs(imageData));
+    $thumbs.addEventListener("click", onThumbClick);
+    displayImage(0);
   }
 
-  // Step 4
-  function displayImage(index) {
-    const image = imageData[index];
-    $img.src = image.urls.regular;
-    $body.style.backgroundColor = image.color;
-    $creditUser.href = image.user.links.html + apis.unsplash.utm;
-    $creditUser.textContent = image.user.name;
+  const fetchData = () => {
+    fetchWeather()
+      .then(fetchImages)
+      .then(onImageData)
+      .catch(onError)
   }
 
-  // Event handlers
-  function onThumbClick(event) {
-    if (event.target.matches("a")) {
-      event.preventDefault();
-      const links = Array.from($thumbs.children);
-      const index = links.indexOf(event.target);
-      displayImage(index);
-    }
-  }
-
-  // START!
-  $thumbs.addEventListener("click", onThumbClick);
   $creditPlatform.href = `https://unsplash.com${apis.unsplash.utm}`;
-  fetchWeather();
+  
+  // START!
+  fetchData()
 })();
