@@ -34,7 +34,24 @@
 
     <div class="thumbs" id="thumbs"></div>
   </main>
-  <script src="./app.js"></script>
+  <script>
+    (scope => {
+      scope.runApp = function () {
+        new scope.App({
+          weather: {
+            key: "a70fde74ccea0ae4b9d62142c9dece40",
+            url: "http://api.openweathermap.org/data/2.5/weather"
+          },
+          unsplash: {
+            key: "df24b455387acb47127898da32793c0e9b3a43b75af80a857feb17cffe4af7f0",
+            url: "https://api.unsplash.com/photos/",
+            utm: "?utm_source=weather&utm_medium=referral&utm_campaign=api-credit"
+          }
+        });
+      }
+    })(this);
+  </script>
+  <script async src="./app.js" onload="runApp()"></script>
 </body>
 
 </html>
