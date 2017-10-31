@@ -1,6 +1,10 @@
 const weatherJSON = require("../fixtures/json/weather.json");
 const unsplashJSON = require("../fixtures/json/unsplash-photos.json");
 
+const getImages = json => {
+  return [json[0], json[json.length - 1]].map(image => image.urls.regular);
+};
+
 function deferred() {
   const deferred = {};
   deferred.promise = new Promise((resolve, reject) => {
@@ -16,34 +20,38 @@ describe("Meteoropolis", function() {
     cy.visit("index.html");
     cy.title().should("include", "Meteoropolis");
   });
+});
 
-  describe("Data fetching", () => {
-    beforeEach(function() {
-      this.fetchDeferred = deferred();
-      // this.fetchImagesDeferred = deferred();
+describe("Data fetching", () => {
+  beforeEach(function() {
+    let counter = 0;
 
-      cy.visit("index.html", {
-        onBeforeLoad(win) {
-          cy.stub(win, "fetch").returns(this.fetchDeferred.promise);
-        }
-      });
+    this.stubbedImages = getImages(unsplashJSON);
+
+    this.fetchDeferred = deferred();
+    this.fetchDeferred.resolve({
+      json() {
+        return counter++ === 0 ? weatherJSON : unsplashJSON;
+      },
+      ok: true
     });
 
-    describe("Fetch weather", function() {
-      let counter = 0;
-
-      beforeEach(function() {
-        this.fetchDeferred.resolve({
-          json() {
-            return counter++ === 0 ? weatherJSON : unsplashJSON;
-          },
-          ok: true
-        });
-      });
-
-      it("stubs data", function() {
-        // cy.window().its('App')
-      });
+    cy.visit("index.html", {
+      onBeforeLoad(win) {
+        cy.stub(win, "fetch").returns(this.fetchDeferred.promise);
+      }
     });
+  });
+
+  it("Displays stubbed data", function() {
+    cy.get("#photo img").should("have.attr", "src", this.stubbedImages[0]);
+    cy.get("#conditions").should("have.text", "Clear STUBBED");
+    cy.get("#credit-user").should("have.text", "Alessio Lin");
+    cy.get("#thumbs img:first").should("have.class", "thumbs__link__img");
+  });
+
+  it("Handles clicks", function() {
+    cy.get("#thumbs a:last").click();
+    cy.get("#photo img").should("have.attr", "src", this.stubbedImages[1]);
   });
 });

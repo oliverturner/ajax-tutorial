@@ -1,10 +1,3 @@
-const $body = document.querySelector("body");
-const $img = document.querySelector("#img");
-const $thumbs = document.querySelector("#thumbs");
-const $conditions = document.querySelector("#conditions");
-const $creditUser = document.querySelector("#credit-user");
-const $creditPlatform = document.querySelector("#credit-platform");
-
 const apis = {
   weather: {
     key: "a70fde74ccea0ae4b9d62142c9dece40",
@@ -20,6 +13,10 @@ const apis = {
 // Utility methods
 function onError(err) {
   console.log(err);
+}
+
+function getWeatherQuery(weatherData) {
+  return weatherData.weather[0].main;
 }
 
 function createThumb(item) {
@@ -38,60 +35,69 @@ function createThumb(item) {
 function createThumbs(imageData) {
   const fragment = document.createDocumentFragment();
   imageData.map(item => {
-    $thumbs.appendChild(createThumb(item));
+    fragment.appendChild(createThumb(item));
   });
 
   return fragment;
 }
 
+// Step 1
+const fetchWeather = () => {
+  const key = apis.weather.key;
+  const url = apis.weather.url;
+  const query = "London,uk";
+
+  return fetch(`${url}?q=${query}&appid=${key}`)
+    .then(res => res.json(), onError)
+    .catch(onError);
+};
+
+// Step 2
+function fetchImages(weatherData) {
+  const key = apis.unsplash.key;
+  const url = apis.unsplash.url;
+  const query = getWeatherQuery(weatherData);
+
+  return fetch(`${url}?query=${query}&client_id=${key}`)
+    .then(res => res.json(), onError)
+    .then(imageData => ({ weatherData, imageData }))
+    .catch(onError);
+}
+
 // APPLICATION
-(() => {
-  // Step 1
-  const fetchWeather = () => {
-    const key = apis.weather.key;
-    const url = apis.weather.url;
-    const query = "London,uk";
+function App() {
+  const $body = document.querySelector("body");
+  const $img = document.querySelector("#img");
+  const $thumbs = document.querySelector("#thumbs");
+  const $conditions = document.querySelector("#conditions");
+  const $creditUser = document.querySelector("#credit-user");
+  const $creditPlatform = document.querySelector("#credit-platform");
 
-    return fetch(`${url}?q=${query}&appid=${key}`)
-      .then(res => res.json(), onError)
-      .catch(onError);
-  };
-
-  // Step 2
-  function fetchImages(weatherData) {
-    const key = apis.unsplash.key;
-    const url = apis.unsplash.url;
-    const query = weatherData.weather[0].main;
-
-    $conditions.textContent = query;
-
-    return fetch(`${url}?query=${query}&client_id=${key}`)
-      .then(res => res.json(), onError)
-      .then(imageData => ({weatherData, imageData}))
-      .catch(onError);
-  }
-
-  // Step 3
-  function onImageData({weatherData, imageData}) {
-    function displayImage(image) {
+  function getDisplayFn(imageData) {
+    return function(index) {
+      const image = imageData[index];
       $img.src = image.urls.regular;
       $body.style.backgroundColor = image.color;
       $creditUser.href = image.user.links.html + apis.unsplash.utm;
       $creditUser.textContent = image.user.name;
-    }
-  
-    // Event handlers
-    function onThumbClick(event) {
+    };
+  }
+
+  // Step 3
+  function onImageData({ weatherData, imageData }) {
+    const displayImage = getDisplayFn(imageData);
+    $thumbs.appendChild(createThumbs(imageData));
+    const anchors = Array.from($thumbs.children);
+
+    $thumbs.addEventListener("click", function(event) {
       if (event.target.matches("a")) {
         event.preventDefault();
-        const links = Array.from($thumbs.children);
-        const index = links.indexOf(event.target);
-        displayImage(imageData[index]);
+        displayImage(anchors.indexOf(event.target));
       }
-    }
+    });
 
-    $thumbs.appendChild(createThumbs(imageData));
-    $thumbs.addEventListener("click", onThumbClick);
+    $conditions.textContent = getWeatherQuery(weatherData);
+
     displayImage(0);
   }
 
@@ -99,11 +105,15 @@ function createThumbs(imageData) {
     fetchWeather()
       .then(fetchImages)
       .then(onImageData)
-      .catch(onError)
-  }
+      .catch(onError);
+  };
 
   $creditPlatform.href = `https://unsplash.com${apis.unsplash.utm}`;
-  
+
   // START!
-  fetchData()
-})();
+  fetchData();
+}
+
+(scope => {
+  scope.app = new App();
+})(this);
