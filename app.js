@@ -32,13 +32,13 @@ function createThumb(item) {
   return anchor;
 }
 
-function createThumbs(imageData) {
+function createThumbs(el, imageData) {
   const fragment = document.createDocumentFragment();
   imageData.map(item => {
     fragment.appendChild(createThumb(item));
   });
 
-  return fragment;
+  return Array.from(el.children);
 }
 
 // Step 1
@@ -86,8 +86,7 @@ function App() {
   // Step 3
   function onImageData({ weatherData, imageData }) {
     const displayImage = getDisplayFn(imageData);
-    $thumbs.appendChild(createThumbs(imageData));
-    const anchors = Array.from($thumbs.children);
+    const anchors = createThumbs($thumbs, imageData);
 
     $thumbs.addEventListener("click", function(event) {
       if (event.target.matches("a")) {

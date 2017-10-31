@@ -13,7 +13,7 @@ function deferred() {
   });
 
   return deferred;
-}
+} 
 
 describe("Meteoropolis", function() {
   it(".should() - assert that <title> is correct", function() {
@@ -50,7 +50,7 @@ describe("Data fetching", () => {
     cy.get("#thumbs img:first").should("have.class", "thumbs__link__img");
   });
 
-  it("Handles clicks", function() {
+  it("Handles clicks on thumbs", function() {
     cy.get("#thumbs a:last").click();
     cy.get("#photo img").should("have.attr", "src", this.stubbedImages[1]);
   });
