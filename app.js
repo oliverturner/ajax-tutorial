@@ -34,9 +34,9 @@ function createThumb(item) {
 
 function createThumbs(el, imageData) {
   const fragment = document.createDocumentFragment();
-  imageData.map(item => {
-    fragment.appendChild(createThumb(item));
-  });
+  imageData.forEach(item => fragment.appendChild(createThumb(item)));
+
+  el.appendChild(fragment);
 
   return Array.from(el.children);
 }
@@ -113,6 +113,4 @@ function App() {
   fetchData();
 }
 
-(scope => {
-  scope.app = new App();
-})(this);
+new App();
