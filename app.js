@@ -85,8 +85,9 @@ function App() {
 
   // Step 3
   function onImageData({ weatherData, imageData }) {
-    const displayImage = getDisplayFn(imageData);
-    const anchors = createThumbs($thumbs, imageData);
+    const { results } = imageData;
+    const displayImage = getDisplayFn(results);
+    const anchors = createThumbs($thumbs, results);
 
     $thumbs.addEventListener("click", function(event) {
       if (event.target.matches("a")) {

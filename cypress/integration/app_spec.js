@@ -1,5 +1,5 @@
 const weatherJSON = require("../fixtures/json/weather.json");
-const unsplashJSON = require("../fixtures/json/unsplash-photos.json");
+const unsplashJSON = require("../fixtures/json/unsplash.json");
 
 const getImages = json => {
   return [json[0], json[json.length - 1]].map(image => image.urls.regular);
@@ -26,7 +26,7 @@ describe("Data fetching", () => {
   beforeEach(function() {
     let counter = 0;
 
-    this.stubbedImages = getImages(unsplashJSON);
+    this.stubbedImages = getImages(unsplashJSON.results);
 
     this.fetchDeferred = deferred();
     this.fetchDeferred.resolve({
@@ -44,9 +44,9 @@ describe("Data fetching", () => {
   });
 
   it("Displays stubbed data", function() {
-    cy.get("#photo img").should("have.attr", "src", this.stubbedImages[0]);
+    cy.get("#img").should("have.attr", "src", this.stubbedImages[0]);
     cy.get("#conditions").should("have.text", "Clear STUBBED");
-    cy.get("#credit-user").should("have.text", "Alessio Lin");
+    cy.get("#credit-user").should("have.text", "Andrej Chudy");
     cy.get("#thumbs img:first").should("have.class", "thumbs__link__img");
   });
 
