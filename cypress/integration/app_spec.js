@@ -13,7 +13,7 @@ function deferred() {
   });
 
   return deferred;
-} 
+}
 
 describe("Meteoropolis", function() {
   it(".should() - assert that <title> is correct", function() {
@@ -53,5 +53,16 @@ describe("Data fetching", () => {
   it("Handles clicks on thumbs", function() {
     cy.get("#thumbs a:last").click();
     cy.get("#photo img").should("have.attr", "src", this.stubbedImages[1]);
+  });
+});
+
+describe("Searching", () => {
+  it("Has a prefilled search", () => {
+    cy.get("#search-tf").should("have.value", "London, UK");
+  });
+  it("Does not submit if there is no term entered", () => {
+    cy.get("#search-tf").clear();
+    cy.get("#search").submit();
+    // TODO: write test that looks for fetch not being called
   });
 });
