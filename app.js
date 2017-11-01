@@ -41,29 +41,6 @@ function createThumbs(el, imageData) {
   return Array.from(el.children);
 }
 
-// Step 1
-const fetchWeather = () => {
-  const key = apis.weather.key;
-  const url = apis.weather.url;
-  const query = "London,uk";
-
-  return fetch(`${url}?q=${query}&appid=${key}`)
-    .then(res => res.json(), onError)
-    .catch(onError);
-};
-
-// Step 2
-function fetchImages(weatherData) {
-  const key = apis.unsplash.key;
-  const url = apis.unsplash.url;
-  const query = getWeatherQuery(weatherData);
-
-  return fetch(`${url}?query=${query}&client_id=${key}`)
-    .then(res => res.json(), onError)
-    .then(imageData => ({ weatherData, imageData }))
-    .catch(onError);
-}
-
 // APPLICATION
 function App() {
   const $body = document.querySelector("body");
@@ -81,6 +58,29 @@ function App() {
       $creditUser.href = image.user.links.html + apis.unsplash.utm;
       $creditUser.textContent = image.user.name;
     };
+  }
+
+  // Step 1
+  const fetchWeather = () => {
+    const key = apis.weather.key;
+    const url = apis.weather.url;
+    const query = "London,uk";
+
+    return fetch(`${url}?q=${query}&appid=${key}`)
+      .then(res => res.json(), onError)
+      .catch(onError);
+  };
+
+  // Step 2
+  function fetchImages(weatherData) {
+    const key = apis.unsplash.key;
+    const url = apis.unsplash.url;
+    const query = getWeatherQuery(weatherData);
+
+    return fetch(`${url}?query=${query}&client_id=${key}`)
+      .then(res => res.json(), onError)
+      .then(imageData => ({ weatherData, imageData }))
+      .catch(onError);
   }
 
   // Step 3
