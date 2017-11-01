@@ -52,10 +52,10 @@ class UI {
   }
 
   displayMain(index, image) {
-    const { user, urls, color, description } = image;
+    const { width, height, user, urls, color, description } = image;
 
     this.thumbs.setActiveIndex(index);
-    this.photo.display(urls.regular, description || this.currentTerm);
+    this.photo.display(width, height, urls.thumb, urls.regular, description || this.currentTerm);
     this.updateUserCredit(user);
     this.$els.body.style["backgroundColor"] = color;
   }
