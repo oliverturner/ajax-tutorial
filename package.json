@@ -30,9 +30,6 @@
     "serve": "6.4.0"
   },
   "lint-staged": {
-    "*.js": [
-      "npm run prettify",
-      "git add"
-    ]
+    "*.js": ["npm run prettify", "git add"]
   }
 }
