@@ -20,7 +20,7 @@
     "start:test": "cypress open",
     "test": "cypress run",
     "prettify": "prettier --write app.js",
-    "precommit": "lint-staged && npm run test:headless"
+    "precommit": "lint-staged && npm t"
   },
   "devDependencies": {
     "cypress": "1.0.3",
