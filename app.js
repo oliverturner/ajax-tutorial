@@ -5,7 +5,7 @@ const apis = {
   },
   unsplash: {
     key: "df24b455387acb47127898da32793c0e9b3a43b75af80a857feb17cffe4af7f0",
-    url: "https://api.unsplash.com/photos/",
+    url: "https://api.unsplash.com/search/photos",
     utm: "?utm_source=weather&utm_medium=referral&utm_campaign=api-credit"
   }
 };
@@ -33,6 +33,8 @@ function createThumb(item) {
 }
 
 function createThumbs(el, imageData) {
+  console.log(imageData);
+
   const fragment = document.createDocumentFragment();
   imageData.forEach(item => fragment.appendChild(createThumb(item)));
 
@@ -111,6 +113,7 @@ function App() {
   $creditPlatform.href = `https://unsplash.com${apis.unsplash.utm}`;
 
   // START!
+  // Load the initial data
   fetchData();
 }
 

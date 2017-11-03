@@ -15,11 +15,12 @@
     "url": "git+https://github.com/oliverturner/ajax-tutorial.git"
   },
   "scripts": {
-    "start": "serve -p 3000",
-    "test": "cypress open",
-    "test:headless": "cypress run",
+    "start": "run-p start:*",
+    "start:serve": "serve -p 3000",
+    "start:test": "cypress open",
+    "test": "cypress run",
     "prettify": "prettier --write app.js",
-    "precommit": "lint-staged && npm run test:headless"
+    "precommit": "lint-staged && npm t"
   },
   "devDependencies": {
     "cypress": "1.0.3",
@@ -30,6 +31,9 @@
     "serve": "6.4.0"
   },
   "lint-staged": {
-    "*.js": ["npm run prettify", "git add"]
+    "*.js": [
+      "npm run prettify",
+      "git add"
+    ]
   }
 }
