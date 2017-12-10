@@ -1,11 +1,6 @@
 const weatherJSON = require("../fixtures/json/weather.json");
 const unsplashJSON = require("../fixtures/json/unsplash.json");
 
-// Cache references to the first and last values of Unsplash
-const getImages = json => {
-  return [json[0], json[json.length - 1]].map(image => image.urls.regular);
-};
-
 const thumbs = {
   first: {
     srcMain:
@@ -71,8 +66,6 @@ describe("Meteoropolis", function() {
 describe("Data fetching", function() {
   beforeEach(function() {
     let counter = 0;
-
-    this.stubbedImages = getImages(unsplashJSON.results);
 
     this.fetchDeferred = deferred();
     this.fetchDeferred.resolve({
