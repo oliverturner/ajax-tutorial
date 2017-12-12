@@ -7,7 +7,8 @@ anything our tooling will tell us right away!
 
 ## Step 1: Adapt existing functionality
 
-- Our app is looking nice but it's very inflexible
+- Our app is looking nice but it's a bit inflexible: we'd like to be able to see
+  images associated with the weather in other places
 - As part of a series of improvements We're going to extract configuration from 
   the script so that it's easier to customise
 

@@ -111,6 +111,8 @@ function App(config) {
   };
 
   const fetchData = city => {
+    console.log("fetchData");
+
     clearUI();
     fetchWeather(city)
       .then(fetchImages)

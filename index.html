@@ -20,7 +20,7 @@
     </header>
 
     <figure class="photo" id="photo">
-      <img id="img" src="">
+      <img id="img">
     </figure>
 
     <div class="info">
@@ -44,7 +44,7 @@
   </main>
   <script>
     (scope => {
-      scope.runApp = () => {
+      scope.runApp = function () {
         new scope.App({
           city: "London, UK",
           apis: {
