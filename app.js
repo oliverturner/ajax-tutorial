@@ -29,9 +29,24 @@ function createThumbLinks(el, imageData) {
   const fragment = document.createDocumentFragment();
   imageData.forEach(item => fragment.appendChild(createThumbLink(item)));
 
+  el.innerHTML = "";
   el.appendChild(fragment);
 
   return Array.from(el.children);
+}
+
+// Bonus: let's add a bit of animation to smooth transitions between images :)
+function loadMainImage(el, url) {
+  const img = document.createElement("img");
+
+  function onLoaded() {
+    img.removeEventListener("load", onLoaded);
+    el.innerHTML = "";
+    el.appendChild(img);
+  }
+
+  img.addEventListener("load", onLoaded);
+  img.src = url;
 }
 
 const getThumbClickFn = (imageData, updateUI) => i => updateUI(imageData[i]);
@@ -41,7 +56,7 @@ const getThumbClickFn = (imageData, updateUI) => i => updateUI(imageData[i]);
 function App(apis) {
   // Cache references to DOM elements
   const $body = document.querySelector("body");
-  const $img = document.querySelector("#img");
+  const $photo = document.querySelector("#photo");
   const $thumbs = document.querySelector("#thumbs");
   const $conditions = document.querySelector("#conditions");
   const $creditUser = document.querySelector("#credit-user");
@@ -50,20 +65,21 @@ function App(apis) {
   $creditPlatform.href = `https://unsplash.com${apis.unsplash.utm}`;
 
   function updateUI({ urls, color, user }) {
-    $img.src = urls.regular;
+    loadMainImage($photo, urls.regular);
+
     $body.style.backgroundColor = color;
     $creditUser.href = user.links.html + apis.unsplash.utm;
     $creditUser.textContent = user.name;
   }
 
-  // API: Step 1 - fetch weather data
+  // Data fetching: Step 1 - weather
   const fetchWeather = ({ key, url, query }) => {
     return fetch(`${url}?q=${query}&appid=${key}`)
       .then(res => res.json(), onError)
       .catch(onError);
   };
 
-  // API: Step 2 - fetch weather-related images & return aggregated data
+  // Data fetching: Step 2 - fetch weather-related images & return aggregated data
   function getFetchImageFn({ key, url }) {
     return function fetchImages(weatherData) {
       const query = getWeatherQuery(weatherData);
@@ -75,14 +91,15 @@ function App(apis) {
     };
   }
 
-  // API: Step 3 - All data loaded: build the UI
+  // Data fetching: Step 3 - All data loaded: build the UI
   function onImageData({ weatherData, imageData }) {
     const { results } = imageData;
 
     const onThumbClick = getThumbClickFn(results, updateUI);
     const thumbLinks = createThumbLinks($thumbs, results);
 
-    // Event delegation means flexible event management
+    // Event delegation means flexible event management: no need to unbind event
+    // handlers when we clear old thumbnails
     $thumbs.addEventListener("click", function(event) {
       if (event.target.matches("a")) {
         event.preventDefault();

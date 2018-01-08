@@ -108,7 +108,7 @@ a {
 
 .photo__dummy,
 .photo > img {
-  animation: 0.5s forwards fade-in;
+  animation: 1s forwards fade-in;
 
   display: block;
   width: 100%;

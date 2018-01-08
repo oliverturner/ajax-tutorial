@@ -16,7 +16,7 @@
   },
   "scripts": {
     "start": "run-p start:*",
-    "start:serve": "serve -p 3000",
+    "start:serve": "parcel index.html",
     "start:test": "cypress open",
     "test": "cypress run",
     "prettify": "prettier --write app.js",
