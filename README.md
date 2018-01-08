@@ -20,11 +20,11 @@ have a current version of Node installed and then run
 (short for `npm install`) in order to pull in the packages listed in the 
 `devDependencies` section of `package.json`
 
-Once we've done that we'll have access to 2 new capabilities: 
+Once we've done that we'll have access to 3 new capabilities: 
 
-- `start`: runs a local server for us to develop against
-- `test`: executes the tests we've written in `./cypress/integration/*_spec.js`
-- `prettify`: formats our code automatically using [Prettier](https://prettier.io/)
+- `npm start`: runs a local server for us to develop against
+- `npm test`: executes the tests we've written in `./cypress/integration/*_spec.js`
+- `npm run prettify`: formats our code automatically using [Prettier](https://prettier.io/)
 
 There are additional packages too:
 
