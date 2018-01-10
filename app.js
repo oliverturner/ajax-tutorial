@@ -4,7 +4,7 @@ function onError(err) {
   console.log(err);
 }
 
-function getWeatherQuery(weatherData) {
+function getWeatherConditions(weatherData) {
   return weatherData.weather[0].main;
 }
 
@@ -49,7 +49,8 @@ function loadMainImage(el, url) {
   img.src = url;
 }
 
-const getThumbClickFn = (imageData, updateUI) => i => updateUI(imageData[i]);
+const getThumbClickFn = (imageData, conditions, updateUI) => index =>
+  updateUI(conditions, imageData[index]);
 
 // APPLICATION
 //------------------------------------------------------------------------------
@@ -61,41 +62,58 @@ function App(apis) {
   const $conditions = document.querySelector("#conditions");
   const $creditUser = document.querySelector("#credit-user");
   const $creditPlatform = document.querySelector("#credit-platform");
+  const $searchForm = document.querySelector("#search");
+  const $searchField = document.querySelector("#search-tf");
 
+  $searchField.value = apis.weather.query;
   $creditPlatform.href = `https://unsplash.com${apis.unsplash.utm}`;
 
-  function updateUI({ urls, color, user }) {
+  function updateUI(coditions, image) {
+    const { urls, color, user } = image;
+
     loadMainImage($photo, urls.regular);
 
     $body.style.backgroundColor = color;
+    $conditions.textContent = coditions;
     $creditUser.href = user.links.html + apis.unsplash.utm;
     $creditUser.textContent = user.name;
   }
 
+  const getFetchFn = apis => {
+    const fetchWeather = getFetchWeatherFn(apis.weather);
+    const fetchImages = getFetchImageFn(apis.unsplash);
+
+    return city => {
+      fetchWeather(city)
+        .then(fetchImages)
+        .then(onImageData)
+        .catch(onError);
+    };
+  };
+
   // Data fetching: Step 1 - weather
-  const fetchWeather = ({ key, url, query }) => {
+  const getFetchWeatherFn = ({ key, url }) => query => {
     return fetch(`${url}?q=${query}&appid=${key}`)
       .then(res => res.json(), onError)
       .catch(onError);
   };
 
   // Data fetching: Step 2 - fetch weather-related images & return aggregated data
-  function getFetchImageFn({ key, url }) {
-    return function fetchImages(weatherData) {
-      const query = getWeatherQuery(weatherData);
+  const getFetchImageFn = ({ key, url }) => weatherData => {
+    const query = getWeatherConditions(weatherData);
 
-      return fetch(`${url}?query=${query}&client_id=${key}`)
-        .then(res => res.json(), onError)
-        .then(imageData => ({ weatherData, imageData }))
-        .catch(onError);
-    };
-  }
+    return fetch(`${url}?query=${query}&client_id=${key}`)
+      .then(res => res.json(), onError)
+      .then(imageData => ({ weatherData, imageData }))
+      .catch(onError);
+  };
 
   // Data fetching: Step 3 - All data loaded: build the UI
   function onImageData({ weatherData, imageData }) {
     const { results } = imageData;
+    const conditions = getWeatherConditions(weatherData);
 
-    const onThumbClick = getThumbClickFn(results, updateUI);
+    const onThumbClick = getThumbClickFn(results, conditions, updateUI);
     const thumbLinks = createThumbLinks($thumbs, results);
 
     // Event delegation means flexible event management: no need to unbind event
@@ -108,28 +126,27 @@ function App(apis) {
       }
     });
 
-    $conditions.textContent = getWeatherQuery(weatherData);
-
     onThumbClick(0);
   }
 
-  // API: Step 0 - Make the request
-  function fetchData(apis) {
-    fetchWeather(apis.weather)
-      .then(getFetchImageFn(apis.unsplash))
-      .then(onImageData)
-      .catch(onError);
+  const fetchData = getFetchFn(apis);
+
+  function onSearch(event) {
+    event.preventDefault();
+    fetchData(this.city.value);
   }
 
+  $searchForm.addEventListener("submit", onSearch);
+
   // START! Load the initial data
-  fetchData(apis);
+  fetchData(apis.weather.query);
 }
 
 new App({
   weather: {
     key: "a70fde74ccea0ae4b9d62142c9dece40",
     url: "http://api.openweathermap.org/data/2.5/weather",
-    query: "London,uk"
+    query: "London, uk"
   },
   unsplash: {
     key: "df24b455387acb47127898da32793c0e9b3a43b75af80a857feb17cffe4af7f0",
