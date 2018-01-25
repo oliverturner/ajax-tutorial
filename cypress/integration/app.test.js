@@ -91,12 +91,12 @@ describe("Data fetching", function() {
       it("displays the correct number of thumbnails", function() {
         cy
           .get("#thumbs")
-          .children(".thumbs__link")
+          .children(".thumb")
           .should("have.length", 10);
       });
 
       it("creates thumbnail component instances", function() {
-        cy.get("#thumbs img:first").should("have.class", "thumbs__link__img");
+        cy.get("#thumbs img:first").should("have.class", "thumb__img");
       });
     });
 

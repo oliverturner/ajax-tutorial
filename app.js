@@ -1,56 +1,29 @@
-const apis = {
-  weather: {
-    key: "a70fde74ccea0ae4b9d62142c9dece40",
-    url: "http://api.openweathermap.org/data/2.5/weather"
-  },
-  unsplash: {
-    key: "df24b455387acb47127898da32793c0e9b3a43b75af80a857feb17cffe4af7f0",
-    url: "https://api.unsplash.com/search/photos",
-    utm: "?utm_source=weather&utm_medium=referral&utm_campaign=api-credit"
-  }
-};
-
-// Utility methods
-function onError(err) {
-  console.log(err);
-}
-
-function getWeatherQuery(weatherData) {
-  return weatherData.weather[0].main;
-}
-
-function createThumb(item) {
-  const img = document.createElement("img");
-  img.src = item.urls.thumb;
-  img.className = "thumbs__link__img";
-
-  const anchor = document.createElement("a");
-  anchor.href = item.links.html;
-  anchor.className = "thumbs__link";
-  anchor.appendChild(img);
-
-  return anchor;
-}
-
-function createThumbs(el, imageData) {
-  console.log(imageData);
-
-  const fragment = document.createDocumentFragment();
-  imageData.forEach(item => fragment.appendChild(createThumb(item)));
-
-  el.appendChild(fragment);
-
-  return Array.from(el.children);
-}
-
-// APPLICATION
-function App() {
+function App(apis) {
+  // Cache references to DOM elements
   const $body = document.querySelector("body");
   const $img = document.querySelector("#img");
-  const $thumbs = document.querySelector("#thumbs");
+  const $gallery = document.querySelector("#gallery");
   const $conditions = document.querySelector("#conditions");
   const $creditUser = document.querySelector("#credit-user");
   const $creditPlatform = document.querySelector("#credit-platform");
+
+  $creditPlatform.href = `https://unsplash.com${apis.unsplash.utm}`;
+
+  // Utility methods
+  function onError(err) {
+    console.log(err);
+  }
+
+  function parseWeather(weatherData) {
+    return weatherData.weather[0].main;
+  }
+
+  function parseItem(item = {}) {
+    return {
+      thumbUrl: item.urls ? item.urls.thumb : "",
+      imageUrl: item.links ? item.links.html : ""
+    };
+  }
 
   function getDisplayFn(imageData) {
     return function(index) {
@@ -62,11 +35,63 @@ function App() {
     };
   }
 
+  function createThumbImage(thumbUrl) {
+    const img = document.createElement("img");
+    img.src = thumbUrl;
+    img.className = "thumb__img";
+
+    return img;
+  }
+
+  function createThumbLink(imageUrl, index) {
+    const anchor = document.createElement("a");
+    anchor.href = imageUrl;
+    anchor.className = "thumb";
+    anchor.dataset.index = index;
+
+    return anchor;
+  }
+
+  function createThumb(el, item, index) {
+    const { thumbUrl, imageUrl } = parseItem(item);
+    const img = createThumbImage(thumbUrl);
+    const anchor = createThumbLink(imageUrl, index);
+
+    anchor.appendChild(img);
+    el.appendChild(anchor);
+
+    return el;
+  }
+
+  function createThumbs(results) {
+    const thumbs = document.createElement("div");
+    thumbs.id = "thumbs";
+    thumbs.className = "thumbs";
+
+    return results.reduce(createThumb, thumbs);
+  }
+
+  function createGallery(results) {
+    const displayImage = getDisplayFn(results);
+
+    const thumbs = createThumbs(results);
+    thumbs.addEventListener("click", function(event) {
+      if (event.target.matches("a")) {
+        event.preventDefault();
+        displayImage(event.target.dataset.index);
+      }
+    });
+
+    $gallery.innerHTML = "";
+    $gallery.appendChild(thumbs);
+
+    displayImage(0);
+  }
+
   // Step 1
-  const fetchWeather = () => {
+  const fetchWeather = query => {
     const key = apis.weather.key;
     const url = apis.weather.url;
-    const query = "London,uk";
 
     return fetch(`${url}?q=${query}&appid=${key}`)
       .then(res => res.json(), onError)
@@ -77,7 +102,7 @@ function App() {
   function fetchImages(weatherData) {
     const key = apis.unsplash.key;
     const url = apis.unsplash.url;
-    const query = getWeatherQuery(weatherData);
+    const query = parseWeather(weatherData);
 
     return fetch(`${url}?query=${query}&client_id=${key}`)
       .then(res => res.json(), onError)
@@ -86,35 +111,37 @@ function App() {
   }
 
   // Step 3
-  function onImageData({ weatherData, imageData }) {
+  function updateUI({ weatherData, imageData }) {
     const { results } = imageData;
-    const displayImage = getDisplayFn(results);
-    const anchors = createThumbs($thumbs, results);
 
-    $thumbs.addEventListener("click", function(event) {
-      if (event.target.matches("a")) {
-        event.preventDefault();
-        displayImage(anchors.indexOf(event.target));
-      }
-    });
-
-    $conditions.textContent = getWeatherQuery(weatherData);
-
-    displayImage(0);
+    $conditions.textContent = parseWeather(weatherData);
+    createGallery(results);
   }
 
-  const fetchData = () => {
-    fetchWeather()
+  // Step 0: orchestrate the data loading
+  function fetchLocationData(location) {
+    fetchWeather(location)
       .then(fetchImages)
-      .then(onImageData)
+      .then(updateUI)
       .catch(onError);
+  }
+
+  // Returning an object of local methods exposes them for unit testing
+  return {
+    parseWeather,
+    parseItem,
+    updateUI,
+    fetchLocationData,
+    fetchWeather,
+    fetchImages,
+    updateUI,
+    getDisplayFn
   };
-
-  $creditPlatform.href = `https://unsplash.com${apis.unsplash.utm}`;
-
-  // START!
-  // Load the initial data
-  fetchData();
 }
 
-new App();
+// Basic UMD
+(function(root, factory) {
+  root.App = factory();
+})(this, function() {
+  return App;
+});

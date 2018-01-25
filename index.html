@@ -10,7 +10,6 @@
 </head>
 
 <body>
-  <!-- Structure -->
   <main class="content">
     <header class="header">
       <h1 class="title">
@@ -32,9 +31,24 @@
       </p>
     </div>
 
-    <div class="thumbs" id="thumbs"></div>
+    <div class="gallery" id="gallery"></div>
   </main>
   <script src="./app.js"></script>
+  <script>
+    const app = new App({
+      weather: {
+        key: "a70fde74ccea0ae4b9d62142c9dece40",
+        url: "http://api.openweathermap.org/data/2.5/weather",
+      },
+      unsplash: {
+        key: "df24b455387acb47127898da32793c0e9b3a43b75af80a857feb17cffe4af7f0",
+        url: "https://api.unsplash.com/search/photos",
+        utm: "?utm_source=weather&utm_medium=referral&utm_campaign=api-credit"
+      }
+    });
+
+    app.fetchLocationData("london");
+  </script>
 </body>
 
 </html>

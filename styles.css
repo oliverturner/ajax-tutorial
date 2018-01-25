@@ -47,7 +47,7 @@ a {
 
 .content {
   display: grid;
-  grid-template-rows: auto 1fr auto auto auto;
+  grid-template-rows: auto 1fr;
 
   height: 100vh;
   overflow: hidden;
@@ -125,9 +125,7 @@ a {
 
 /* Thumbs
 ------------------------------------------------------------------------------*/
-.thumbs {
-  display: flex;
-
+.gallery {
   -webkit-overflow-scrolling: touch;
   scroll-behavior: smooth;
 
@@ -138,7 +136,11 @@ a {
   background: rgba(0, 0, 0, 0.25);
 }
 
-.thumbs__link {
+.thumbs {
+  display: flex;
+}
+
+.thumb {
   flex: 0 0 auto;
 
   animation: 0.25s forwards fade-in;
@@ -150,13 +152,13 @@ a {
   background: rgba(0, 0, 0, 0.5);
 }
 
-.thumbs__link.active,
-.thumbs__link:hover,
-.thumbs__link:focus {
+.thumb.active,
+.thumb:hover,
+.thumb:focus {
   outline: 1px solid white;
 }
 
-.thumbs__link__img {
+.thumb__img {
   animation: 0.25s forwards fade-in;
 
   display: block;

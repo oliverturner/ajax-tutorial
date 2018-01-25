@@ -1,39 +1,51 @@
 {
   "name": "ajax-tutorial",
-  "description": "A multi-part tutorial on working with APIs",
   "version": "1.0.0",
+  "description": "A multi-part tutorial on working with APIs",
   "author": "Oliver Turner <oliver.turner@codedsignal.co.uk>",
-  "bugs": {
-    "url": "https://github.com/oliverturner/ajax-tutorial/issues"
-  },
-  "homepage": "https://github.com/oliverturner/ajax-tutorial#readme",
   "keywords": [],
   "license": "ISC",
   "main": "app.js",
+  "homepage": "https://github.com/oliverturner/ajax-tutorial#readme",
+  "bugs": {
+    "url": "https://github.com/oliverturner/ajax-tutorial/issues"
+  },
   "repository": {
     "type": "git",
     "url": "git+https://github.com/oliverturner/ajax-tutorial.git"
   },
-  "scripts": {
-    "start": "run-p start:*",
-    "start:serve": "serve -p 3000",
-    "start:test": "cypress open",
-    "test": "cypress run",
-    "prettify": "prettier --write app.js",
-    "precommit": "lint-staged && npm t"
-  },
   "devDependencies": {
-    "cypress": "1.1.4",
+    "cypress": "1.4.1",
     "husky": "0.14.3",
-    "lint-staged": "6.0.0",
+    "jest": "22.0.3",
+    "jest-fetch-mock": "1.4.1",
+    "lint-staged": "6.0.1",
     "npm-run-all": "4.1.2",
-    "prettier": "1.9.1",
-    "serve": "6.4.1"
+    "prettier": "1.10.2"
+  },
+  "jest": {
+    "automock": false,
+    "setupFiles": [
+      "./jest/setup.js"
+    ],
+    "testPathIgnorePatterns": [
+      "<rootDir>/cypress/",
+      "<rootDir>/node_modules/"
+    ]
   },
   "lint-staged": {
     "*.js": [
       "npm run prettify",
       "git add"
     ]
+  },
+  "scripts": {
+    "precommit": "lint-staged && npm t",
+    "prettify": "prettier --write app.js",
+    "start": "run-p start:*",
+    "start:serve": "parcel index.html",
+    "start:test": "cypress open",
+    "test": "cypress run",
+    "jest": "jest"
   }
 }
